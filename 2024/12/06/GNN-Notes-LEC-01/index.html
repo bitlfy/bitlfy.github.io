@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN Notes : LEC 01 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 01 GNN1. Why Graph?Graph is general language for entities with relations 2. Type of Graph Natural Network Graph  3. Why Hard? Arbitrary size &amp; Complex topology No reference point Dynamic multi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN Notes : LEC 01">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 01 GNN1. Why Graph?Graph is general language for entities with relations 2. Type of Graph Natural Network Graph  3. Why Hard? Arbitrary size &amp; Complex topology No reference point Dynamic multi">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-06T11:49:00.000Z">
+<meta property="article:modified_time" content="2024-12-06T11:50:15.067Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-01" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-01/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:00.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN Notes : LEC 01
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-01-GNN"><a href="#Lec-01-GNN" class="headerlink" title="Lec 01 GNN"></a>Lec 01 GNN</h2><h3 id="1-Why-Graph"><a href="#1-Why-Graph" class="headerlink" title="1. Why Graph?"></a>1. Why Graph?</h3><p>Graph is general language for <strong>entities with relations</strong></p>
+<h3 id="2-Type-of-Graph"><a href="#2-Type-of-Graph" class="headerlink" title="2. Type of Graph"></a>2. Type of Graph</h3><ul>
+<li>Natural Network</li>
+<li>Graph</li>
+</ul>
+<h3 id="3-Why-Hard"><a href="#3-Why-Hard" class="headerlink" title="3. Why Hard?"></a>3. Why Hard?</h3><ul>
+<li>Arbitrary size &amp; Complex topology</li>
+<li>No reference point</li>
+<li>Dynamic</li>
+<li>multimodal</li>
+</ul>
+<h3 id="4-Process-of-supervised-graph"><a href="#4-Process-of-supervised-graph" class="headerlink" title="4. Process of supervised graph"></a>4. Process of supervised graph</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">1[RawData]--&gt;2[GraphData]--&gt;3[LearningAlgorithm]--&gt;4[Model]</span><br></pre></td></tr></table></figure>
+
+<p>Use <strong>Represent Learning</strong> instead of <strong>Feature Engineering</strong> to realize transferring raw data to graph data</p>
+<h3 id="5-Classic-Graph-ML-Tasks"><a href="#5-Classic-Graph-ML-Tasks" class="headerlink" title="5. Classic Graph ML Tasks"></a>5. Classic Graph ML Tasks</h3><ul>
+<li>Node Classification</li>
+<li>Edge Prediction</li>
+<li>Graph Classification</li>
+<li>Clustering : if nodes form a community</li>
+<li>Graph Generation</li>
+<li>Graph Evolution</li>
+</ul>
+<h3 id="6-Examples-of-Graph-ML-Tasks"><a href="#6-Examples-of-Graph-ML-Tasks" class="headerlink" title="6. Examples of Graph ML Tasks"></a>6. Examples of Graph ML Tasks</h3><p><strong>Node Level</strong></p>
+<p>predict residue’s position</p>
+<p><strong>Edge Level</strong></p>
+<p>Recommend System</p>
+<p>Predict the size effects</p>
+<p><strong>Subgraph Level</strong></p>
+<p>Traffic Prediction</p>
+<p><strong>Graph Level</strong></p>
+<p>Drug Discovery</p>
+<p>Generating novel molecules</p>
+<h3 id="7-Components-of-a-Network"><a href="#7-Components-of-a-Network" class="headerlink" title="7. Components of a Network"></a>7. Components of a Network</h3><p>$N$ : nodes or vertices</p>
+<p>$E$ : edges or links</p>
+<p>$G(N,E)$ : network or graph</p>
+<h3 id="8-Network-Classification"><a href="#8-Network-Classification" class="headerlink" title="8. Network Classification"></a>8. Network Classification</h3><p><strong>classification from Attribution</strong></p>
+<ul>
+<li>Directed &#x2F; Undirected</li>
+<li>Weighted &#x2F; Unweighted</li>
+<li>self-edge</li>
+<li>multi-graph</li>
+<li>strongly connected &#x2F; weakly connected &#x2F; disconnected</li>
+</ul>
+<p><strong>Special Class</strong></p>
+<ul>
+<li>Bipartite Graph</li>
+<li>Folded Bipartite Graph</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">flowchart TB</span><br><span class="line">subgraph Projection-V</span><br><span class="line">VA[A]</span><br><span class="line">VB[B]</span><br><span class="line">VC[C]</span><br><span class="line">VD[D]</span><br><span class="line">VA---VB</span><br><span class="line">VB---VC</span><br><span class="line">VC---VD</span><br><span class="line">VB---VD</span><br><span class="line">end</span><br><span class="line">subgraph total</span><br><span class="line">T1((1))</span><br><span class="line">T2((2))</span><br><span class="line">T3((3))</span><br><span class="line">T4((4))</span><br><span class="line">T5((5))</span><br><span class="line">T6((6))</span><br><span class="line">T7((7))</span><br><span class="line">TA[A]</span><br><span class="line">TB[B]</span><br><span class="line">TC[C]</span><br><span class="line">TD[D]</span><br><span class="line">T1 &amp; T2 &amp; T3 --- TA</span><br><span class="line">T2 &amp; T5 --- TB</span><br><span class="line">T4 &amp; T5 --- TC</span><br><span class="line">T5 &amp; T6 &amp; T7 --- TD</span><br><span class="line">end</span><br><span class="line">subgraph Projection-U</span><br><span class="line">U1((1))</span><br><span class="line">U2((2))</span><br><span class="line">U3((3))</span><br><span class="line">U4((4))</span><br><span class="line">U5((5))</span><br><span class="line">U6((6))</span><br><span class="line">U7((7))</span><br><span class="line">U1---U2---U3---U1</span><br><span class="line">U2---U5</span><br><span class="line">U6---U7---U5---U6</span><br><span class="line">U5---U4</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-Node-Degree"><a href="#9-Node-Degree" class="headerlink" title="9. Node Degree"></a>9. Node Degree</h3><p><strong>For Undirected</strong></p>
+<p>$k_i$ : the degree of node $i$</p>
+<p>$\bar k$ : the average degree of nodes</p>
+<p>$\bar k &#x3D; \frac 1 N \sum_{i&#x3D;1}^N k_i&#x3D;\frac{2|E|}{N}$ </p>
+<p><strong>For Directed</strong></p>
+<p>$k_i^{in}$ : the in-degree of node $i$</p>
+<p>$k_i^{out}$ : the out-degree of node $i$</p>
+<p>$\bar k_i^{in} &#x3D; \bar k_i^{out} &#x3D; \frac{|E|}{|N|}$</p>
+<h3 id="10-Represent-Graph"><a href="#10-Represent-Graph" class="headerlink" title="10. Represent Graph"></a>10. Represent Graph</h3><h4 id="1-Adjacency-Matrix"><a href="#1-Adjacency-Matrix" class="headerlink" title="(1) Adjacency Matrix"></a>(1) Adjacency Matrix</h4><p><strong>Element $A_{ij}$</strong><br>$$<br>A_{ij} &#x3D; \left{ \begin{array}{rcl}<br>1 &amp; , &amp; if\ link\ from\ i\ to\ j\ exists\<br>0 &amp; , &amp; otherwise<br>\end{array}\right.<br>$$<br><strong>Degrees</strong> </p>
+<p><em><strong>For Undirected</strong></em></p>
+<p>$k_i &#x3D; \sum_{j&#x3D;1}^N A_{ij}$</p>
+<p>$k_j &#x3D; \sum_{i&#x3D;1}^N A_{ij}$ </p>
+<p>$L &#x3D; \frac 12 \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
+<p><em><strong>For Directed</strong></em></p>
+<p>$k_j^{in} &#x3D; \sum_{i&#x3D;1}^{N}A_ij$</p>
+<p>$k_i^{out} &#x3D; \sum_{j&#x3D;1}^{N}A_ij$</p>
+<p>$L &#x3D; \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
+<h4 id="2-Edge-List"><a href="#2-Edge-List" class="headerlink" title="(2) Edge List"></a>(2) Edge List</h4><h4 id="3-Adjacency-List"><a href="#3-Adjacency-List" class="headerlink" title="(3) Adjacency List"></a>(3) Adjacency List</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4coqb0100009ow53sdi53sn" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-02/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GNN Notes : LEC 02
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

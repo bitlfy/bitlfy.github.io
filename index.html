@@ -69,6 +69,458 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GNN-Notes-LEC-04" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-04/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:12.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-04-PageRank-and-Link-Analysis"><a href="#Lec-04-PageRank-and-Link-Analysis" class="headerlink" title="Lec 04 PageRank and Link Analysis"></a>Lec 04 PageRank and Link Analysis</h2><h3 id="1-PageRank"><a href="#1-PageRank" class="headerlink" title="1. PageRank"></a>1. PageRank</h3><h4 id="main-idea"><a href="#main-idea" class="headerlink" title="main idea"></a>main idea</h4><p>Regard links as votes : Page is more important if it has more links</p>
+<p>Different Importance of links : links from important links are more important</p>
+<p>Combination : A point is important if it is pointed by other important pages</p>
+<h4 id="Formula"><a href="#Formula" class="headerlink" title="Formula"></a>Formula</h4><p><strong>Common Formulation</strong></p>
+<p>$r_i$ : the $i$-th node’s rank or score</p>
+<p>$d_i$ : the out-degree of $i$-th node<br>$$<br>r_j &#x3D; \sum_{i-&gt;j}\frac{r_i}{d_i}<br>$$<br><strong>Matrix Formulation</strong></p>
+<p>$A_{ij}$ : equal to 1 if edge from node $i$ to $j$ exists, else 0</p>
+<p>$sum_by_row(A)$ : a vector means the out-degrees of nodes in graph</p>
+<p>Stochastic adjacency matrix M : if $j-&gt;i$, $M_{ij} &#x3D; 1 &#x2F; d_j$</p>
+<p>$M &#x3D; (A &#x2F; sum_by_row(A))^T$</p>
+<p>so that $r &#x3D; M \cdot r$</p>
+<p><strong>Eigenvector Formulation</strong></p>
+<p>we could regard $r &#x3D; M \cdot r$ as $1\cdot r &#x3D; M \cdot r$, so that $r$ would be the eigenvector with the eigenvalue 1</p>
+<h3 id="2-How-to-solve-PageRank"><a href="#2-How-to-solve-PageRank" class="headerlink" title="2. How to solve PageRank ?"></a>2. How to solve PageRank ?</h3><h4 id="Power-Iteration"><a href="#Power-Iteration" class="headerlink" title="Power Iteration"></a>Power Iteration</h4><p><strong>algorithm</strong> :</p>
+<ol>
+<li><p>assign each node an initial page rank</p>
+</li>
+<li><p>repeat until convergence $\sum_i|r_i^{t+1} - r_i^t| &lt;&#x3D; \varepsilon \Leftrightarrow |r^{t+1}-r^t|_1 &lt;&#x3D;varepsilon$:<br>$$<br>\begin{align}<br>&amp;r_j^{t+1} &#x3D; \sum_{i-&gt;j} \frac{r_i^t}{d_i}\<br>\Leftrightarrow &amp;r &#x3D; M\cdot r<br>\end{align}<br>$$</p>
+</li>
+</ol>
+<h4 id="Problem-converge"><a href="#Problem-converge" class="headerlink" title="Problem : converge"></a>Problem : converge</h4><p><strong>problem in converge</strong> :</p>
+<p>dead ends problem : no out-links</p>
+<p>Spider traps : all out-links within the group</p>
+<p><strong>solution</strong> : teleport</p>
+<p>At each time step, with the probability $\beta$, follow a link at random; with the probability $1-\beta$, jump to a random node</p>
+<p>commonly, $0.8 &lt; \beta &lt;0.9$ </p>
+<p>Especially, when surfer arrive at a dead end, it has $1.0$ probability to jump to a random node</p>
+<p>Formulation as follow (assume that $\sum_{i} r_i &#x3D; 1$):<br>$$<br>\begin{align}<br>&amp;r_j&#x3D;\sum_{i\rightarrow j}\beta\frac{r_i}{d_i} + \frac1N(1-\beta)\<br>\Leftrightarrow &amp;P &#x3D; \beta \cdot M + \frac1N(1-\beta)<br>\end{align}<br>$$</p>
+<h3 id="3-Personalized-PageRank-and-Random-Walks-with-Restarts"><a href="#3-Personalized-PageRank-and-Random-Walks-with-Restarts" class="headerlink" title="3. Personalized PageRank and Random Walks with Restarts"></a>3. Personalized PageRank and Random Walks with Restarts</h3><h4 id="PageRank-PPR-and-RWR"><a href="#PageRank-PPR-and-RWR" class="headerlink" title="PageRank, PPR and RWR"></a>PageRank, PPR and RWR</h4><p><strong>difference</strong> : the points could be teleported to </p>
+<p>PageRank : teleport to anywhere on the graph</p>
+<p>PPR : teleport to only a subset of graph</p>
+<p>RWR : always teleport to the staring point</p>
+<h4 id="Random-Walks-with-Restarts"><a href="#Random-Walks-with-Restarts" class="headerlink" title="Random Walks with Restarts"></a>Random Walks with Restarts</h4><p><strong>Idea</strong> : </p>
+<ol>
+<li>Every node has some importance</li>
+<li>Importance gets evenly split among all edges and pushed to the neighbors</li>
+</ol>
+<p><strong>algorithm</strong> :</p>
+<ol>
+<li>Given a set of query_nodes $Q$, randomly select a node $q_i$ and make a random walk</li>
+<li>make a step to a random neighbor and record visit  or with $1 -\beta$ probability to restart from $q_j \in Q$ </li>
+<li>the nodes with the highest visit count have highest proximity to $Q$</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">item = Q.sample_by_weight()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(N_STEPS):</span><br><span class="line">	item = item.get_random_neighbor()</span><br><span class="line">    item.visited_time += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> random &gt;= beta :</span><br><span class="line">        item = Q.sample_by_weight()</span><br></pre></td></tr></table></figure>
+
+<p><strong>considers</strong> : </p>
+<ul>
+<li>multiple connections</li>
+<li>multiple paths</li>
+<li>directed and undirected connection</li>
+<li>degree of node</li>
+</ul>
+<h3 id="4-Matrix-Factorization"><a href="#4-Matrix-Factorization" class="headerlink" title="4. Matrix Factorization"></a>4. Matrix Factorization</h3><h4 id="Embedding-and-Matrix-Factorization"><a href="#Embedding-and-Matrix-Factorization" class="headerlink" title="Embedding and Matrix Factorization"></a>Embedding and Matrix Factorization</h4><p>Given : <strong>measure the similarity of nodes with adjacency matrix $A$</strong></p>
+<p>then : $Z^TZ \approx A$</p>
+<p>so that : $\arg \min_Z ||A-Z^TZ||_2$</p>
+<p>Exactly : we make matrix factorization of adjacency matrix $A$</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4coqb0600029ow57yfj86wn" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-03" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-03/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:08.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-03-Node-Embedding"><a href="#Lec-03-Node-Embedding" class="headerlink" title="Lec 03 Node Embedding"></a>Lec 03 Node Embedding</h2><h3 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a>1. Overview</h3><p><strong>Goal</strong> : Efficient task-independent feature learning for ML with graph</p>
+<p><strong>Why Embedding</strong> ?</p>
+<ol>
+<li>similarity of embedding space indicate that in origin space</li>
+<li>encode information</li>
+<li>could used in many downstream tasks</li>
+</ol>
+<h3 id="2-Encoder-and-Decoder"><a href="#2-Encoder-and-Decoder" class="headerlink" title="2. Encoder and Decoder"></a>2. Encoder and Decoder</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">subgraph Embedding Space</span><br><span class="line">a((ZA))</span><br><span class="line">b((ZB))</span><br><span class="line">c((ZC))</span><br><span class="line">d((ZD))</span><br><span class="line">u((ZU))</span><br><span class="line">v((ZV))</span><br><span class="line">end</span><br><span class="line">subgraph Origin Network</span><br><span class="line">1((A))</span><br><span class="line">2((B))</span><br><span class="line">3((C))</span><br><span class="line">4((D))</span><br><span class="line">5((U))</span><br><span class="line">6((V))</span><br><span class="line">1---2</span><br><span class="line">1---3</span><br><span class="line">1---4</span><br><span class="line">5---1</span><br><span class="line">6---1</span><br><span class="line">end</span><br><span class="line">ARROW[Embedding To]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Learning-Node-Embedding"><a href="#Learning-Node-Embedding" class="headerlink" title="Learning Node Embedding"></a>Learning Node Embedding</h4><ol>
+<li>Encoder maps from nodes to embeddings</li>
+<li>define a similarity function in origin space</li>
+<li>Decoder maps from embeddings to similarity scores</li>
+<li>optimize the parameters of encoder</li>
+</ol>
+<h3 id="3-Shallow-Encoding-Embedding-lookup"><a href="#3-Shallow-Encoding-Embedding-lookup" class="headerlink" title="3. Shallow Encoding : Embedding lookup"></a>3. Shallow Encoding : Embedding lookup</h3><p>$$<br>Enc(v_i) &#x3D; z_{v_i} &#x3D; Z \cdot v_i\<br>(v_i)_j &#x3D; \left{ \begin{array}{rcl}<br>0,i\ne j\<br>1,i&#x3D;j<br>\end{array} \right.\<br>Z \in R^{d\times |V|}<br>$$</p>
+<p><strong>Weakness</strong> : need to optimize a large number of parameters</p>
+<h3 id="4-Random-Walk-Overview"><a href="#4-Random-Walk-Overview" class="headerlink" title="4. Random Walk : Overview"></a>4. Random Walk : Overview</h3><h4 id="Algorithm-of-Random-Walk"><a href="#Algorithm-of-Random-Walk" class="headerlink" title="Algorithm of Random Walk"></a>Algorithm of Random Walk</h4><ol>
+<li><p>Run short fixed-length random walks starting from each node $u$ with strategy $R$</p>
+</li>
+<li><p>collect $N_R(u)$ for each node $u$, where $N_R(u)$ is a multi-set including all node access in step 1</p>
+</li>
+<li><p>optimize the loss function gradient descent<br>$$<br>\arg \min_{z_u,u\in V} \sum_{u \in V} \sum_{v \in N_R(u)} - \log \frac{\exp(z_u^Tz_v)}{\sum_{n\in V} z_u^Tz_n}<br>$$</p>
+</li>
+</ol>
+<h4 id="Weakness-time-expensive"><a href="#Weakness-time-expensive" class="headerlink" title="Weakness : time expensive"></a>Weakness : time expensive</h4><p>The time complexity of loss function calculating is $O(|N|^2)$, that means it is <strong>time expensive</strong></p>
+<h4 id="Solution-Negative-Sample"><a href="#Solution-Negative-Sample" class="headerlink" title="Solution : Negative Sample"></a>Solution : Negative Sample</h4><p>To simplify the loss function’s calculating, use the formula as follow<br>$$<br>\log \frac{\exp(z_u^Tz_v)}{\sum_{n\in V} z_u^Tz_n} \approx \log (\sigma(z_u^Tz_v)) - \sum_{i&#x3D;1}^k \log(\sigma(z_u^Tz_{n_i}))\<br>\sigma(x) &#x3D; \frac{1}{1+\exp(-x)}\<br>$$<br> In the formula, $n_i$ express the node got by sample from random distribution</p>
+<p>Proved by the practice, the negative sample have good performance when $k$ just in $[5,20]$</p>
+<h3 id="5-The-Random-Walk-Strategy"><a href="#5-The-Random-Walk-Strategy" class="headerlink" title="5. The Random Walk Strategy"></a>5. The Random Walk Strategy</h3><h4 id="5-1-Deep-Walk"><a href="#5-1-Deep-Walk" class="headerlink" title="5.1 Deep Walk"></a>5.1 Deep Walk</h4><p>Just run fixed-length, unbiased random walks</p>
+<p>Weakness : too constrained</p>
+<h4 id="5-2-Node2Vec"><a href="#5-2-Node2Vec" class="headerlink" title="5.2 Node2Vec"></a>5.2 Node2Vec</h4><p><strong>Idea</strong> : use flexible, biased random walks that can trade off between local and global, where local nodes’ explored by BFS while global by DFS</p>
+<p><strong>Super Parameters</strong></p>
+<ol>
+<li>return parameter $p$ : depend the probability to return to previous node</li>
+<li>In-out parameter $q$ : depend the probability to BFS or DFS</li>
+</ol>
+<p><strong>Example For node2vec</strong></p>
+<p>For the graph below, assume previous node is $A$ and current node is $B$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">1((A))</span><br><span class="line">subgraph Distance1</span><br><span class="line">2((B))</span><br><span class="line">3((C))</span><br><span class="line">end</span><br><span class="line">subgraph Distance2</span><br><span class="line">5((E))</span><br><span class="line">6((F))</span><br><span class="line">end</span><br><span class="line">1---2</span><br><span class="line">1---3</span><br><span class="line">2---5</span><br><span class="line">2---6</span><br></pre></td></tr></table></figure>
+
+<p>The next node would depend by random sample from the distribution as follow :<br>$$<br>nextnode &#x3D; \left{\begin{array}{rcl}<br>A,prob &#x3D; 1 &#x2F; p\<br>C,prob &#x3D; 1 &#x2F; q\<br>E,prob &#x3D; 1\<br>F,prob &#x3D; 1<br>\end{array}\right.\<br>$$<br>Attention : the probabilities is <strong>not normalized</strong></p>
+<h3 id="6-Entire-Graph-Embedding"><a href="#6-Entire-Graph-Embedding" class="headerlink" title="6. Entire Graph Embedding"></a>6. Entire Graph Embedding</h3><h4 id="6-1-Sum-or-average"><a href="#6-1-Sum-or-average" class="headerlink" title="6.1 Sum or average"></a>6.1 Sum or average</h4><p><strong>algorithm</strong> :</p>
+<ol>
+<li>run a standard node embedding technique on graph G</li>
+<li>sum or average all node embeddings in the G</li>
+</ol>
+<h4 id="6-2-Virtual-Node"><a href="#6-2-Virtual-Node" class="headerlink" title="6.2 Virtual Node"></a>6.2 Virtual Node</h4><p><strong>algorithm</strong> : </p>
+<ol>
+<li>use a virtual node represent the entire graph, maybe have a series of edges with node in the graph</li>
+<li>run a standard node embedding technique to get the virtual node’s embedding</li>
+</ol>
+<h4 id="6-3-Anonymous-Walk-Embedding-v1"><a href="#6-3-Anonymous-Walk-Embedding-v1" class="headerlink" title="6.3 Anonymous Walk Embedding : v1"></a>6.3 Anonymous Walk Embedding : v1</h4><p><strong>algorithm</strong> : </p>
+<ol>
+<li>run a random walk on the graph $G$</li>
+<li>anonymization : for each node in a random walk result, replace its name with the index of the first time it occur</li>
+<li>for all of anonymous walk produced by 2, count the number of all kinds of anonymous walk</li>
+<li>Embedding $Z_G[i]$ represent the score or probability of $i$-th anonymous walk</li>
+</ol>
+<p><strong>the dimension of embedding $Z_G$</strong>:</p>
+<p>Because the kind number of anonymous walk <strong>depend on the length of walk</strong>, so the dimension of embedding depend on it too.</p>
+<p><strong>How many random walks m do we need?</strong></p>
+<p>We want the distribution to have <strong>error of more than $\varepsilon$ with probability less than $\delta$</strong><br>$$<br>m &#x3D; \lceil \frac 2 {\varepsilon^2(\log(2^n-2)-\log(\delta))} \rceil<br>$$</p>
+<h4 id="6-4-Anonymous-Walk-Embedding-v2"><a href="#6-4-Anonymous-Walk-Embedding-v2" class="headerlink" title="6.4 Anonymous Walk Embedding : v2"></a>6.4 Anonymous Walk Embedding : v2</h4><p><strong>signals</strong> : </p>
+<p>$\eta$ : the number of samples, the “sample” mean the sum of window number could be extracted from all anonymous walk</p>
+<p>$Z$ : the embeddings of walks, $z_i$ express $i$-th specific type of anonymous walk</p>
+<p>$\Delta$ : the window size</p>
+<p>$z_G$ : the embedding of the entire graph $G$</p>
+<p>$w_{i,j}$ : the $j$-th anonymous walk in the series sampled starting from node $i$  </p>
+<p><strong>algorithm</strong> :</p>
+<p>learn the embeddings of anonymous walks $Z &#x3D; {z_i|i&#x3D;1,2,…,\eta}$ as well as $z_G$</p>
+<p>a) for each node i, starting from it and sample anonymous walks randomly, get a series of walks called $[w_{i1},w_{i2},…,w_{iT}]$</p>
+<p>b) for a window size $\Delta$, learn to predict walks that co-occur<br>$$<br>\arg \min_{Z,z_G,b,U} \sum_{i \in G }\sum_{t&#x3D;\Delta}^{T-\Delta} -\log P(w_{i,t}|{w_{i,t-\Delta},w_{i,t-\Delta+1},…,w_{i,t+\Delta},z_G})\<br>P(w_{i,t}|{w_{i,t-\Delta},w_{i,t-\Delta+1},…,w_{i,t+\Delta},z_G}) &#x3D; \frac{\exp(y(w_{i,t}))}{\sum_{j&#x3D;1}^\eta \exp(y(w_j))}\<br>y(w) &#x3D; b + U (cat(\frac 1 {2\Delta}\sum_{i&#x3D;-\Delta}^\Delta z_i,z_G))<br>$$</p>
+<h3 id="7-How-to-use-Embeddings"><a href="#7-How-to-use-Embeddings" class="headerlink" title="7. How to use Embeddings"></a>7. How to use Embeddings</h3><ul>
+<li><p><strong>Clustering</strong> by point $z_i$</p>
+<ul>
+<li>community detection</li>
+</ul>
+</li>
+<li><p><strong>Node classification</strong> by point $z_i$</p>
+<ul>
+<li>predict the label of node</li>
+</ul>
+</li>
+<li><p><strong>Link prediction</strong> : predict edge $(i,j)$ based on $(z_i,z_j)$</p>
+<ul>
+<li>concatenate : $[z_i,z_j]$</li>
+<li>Hadamard :  $z_i * z_j$</li>
+<li>Sum &#x2F; Avg : $z_i + z_j$</li>
+<li>Distance : $||z_i-z_j||_2$</li>
+</ul>
+</li>
+<li><p><strong>Graph classification</strong> by $z_G$</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4coqb0700039ow54i53ho29" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-02" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-02/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:05.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-02-Traditional-feature-base-method-for-GNN"><a href="#Lec-02-Traditional-feature-base-method-for-GNN" class="headerlink" title="Lec 02 Traditional feature-base method for GNN"></a>Lec 02 Traditional feature-base method for GNN</h2><h3 id="1-Node-Level-Feature"><a href="#1-Node-Level-Feature" class="headerlink" title="1. Node-Level Feature"></a>1. Node-Level Feature</h3><h4 id="Node-Degree"><a href="#Node-Degree" class="headerlink" title="Node Degree"></a>Node Degree</h4><p><strong>category</strong> : importance-based, structure-based</p>
+<p>weakness : treat all neighboring nodes equally</p>
+<h4 id="Node-Centrality"><a href="#Node-Centrality" class="headerlink" title="Node Centrality"></a>Node Centrality</h4><p><strong>category</strong> : importance-based</p>
+<p><strong>core</strong> : take the node importance in a graph</p>
+<h5 id="eigenvector-centrality"><a href="#eigenvector-centrality" class="headerlink" title="eigenvector centrality"></a>eigenvector centrality</h5><p><strong>core</strong> : v is important if its neighboring nodes are important</p>
+<p><strong>formula</strong> :<br>$$<br>\begin{align}<br>&amp;c_v &#x3D; \frac{1}{\lambda} \sum_{u\in N(v)} c_u\</p>
+<p>\Leftrightarrow&amp;\lambda c &#x3D; A c<br>\end{align}<br>$$</p>
+<h5 id="bewteeness-centrality"><a href="#bewteeness-centrality" class="headerlink" title="bewteeness centrality"></a>bewteeness centrality</h5><p><strong>core</strong> : v is important if v lies on many shortest paths between two nodes</p>
+<p><strong>formula</strong> :</p>
+<p>use $p(u,v)$ express the number of shortest path between $u$ and $v$</p>
+<p>use $p(v,s,t)$ express the number of shortest path between $s$ and $t$ via $v$<br>$$<br>c_v &#x3D; \sum_{v\ne s\ne t}\frac{p(s,t)}{p(s,t,v)}<br>$$</p>
+<h5 id="closeness-centrality"><a href="#closeness-centrality" class="headerlink" title="closeness centrality"></a>closeness centrality</h5><p><strong>core</strong> : v is important if v has small shortest path lengths to all other nodes</p>
+<p><strong>formula</strong> : </p>
+<p>use $p(u,v)$ express the shortest path length between node $u$ and $v$<br>$$<br>c_v &#x3D; \frac 1 {\sum_{u\ne v}p(u,v)}<br>$$</p>
+<h4 id="Clustering-coefficient"><a href="#Clustering-coefficient" class="headerlink" title="Clustering coefficient"></a>Clustering coefficient</h4><p><strong>category</strong> : structure-based</p>
+<p><strong>formula</strong> : </p>
+<p>use $e(N(v))$ express the number of edge among $N(v)$<br>$$<br>c_v &#x3D; \frac{e(N(v))}{C_{k_v}^2}<br>$$</p>
+<h4 id="Graphlet-Degree-Vector"><a href="#Graphlet-Degree-Vector" class="headerlink" title="Graphlet Degree Vector"></a>Graphlet Degree Vector</h4><p><strong>category</strong> : structure-based</p>
+<p><strong>core</strong> : use the number of graphlet with node $v$ express $v$’s feature</p>
+<h3 id="2-Link-Level-Feature"><a href="#2-Link-Level-Feature" class="headerlink" title="2. Link-Level Feature"></a>2. Link-Level Feature</h3><h4 id="Task-of-Link-Prediction"><a href="#Task-of-Link-Prediction" class="headerlink" title="Task of Link Prediction"></a>Task of Link Prediction</h4><p>Given : existing links</p>
+<p>Aim : predict new links</p>
+<p>Key : design features to express a pair of nodes</p>
+<h4 id="Formulations-of-link-predictions"><a href="#Formulations-of-link-predictions" class="headerlink" title="Formulations of link predictions"></a>Formulations of link predictions</h4><h5 id="links-missing-at-ramdon"><a href="#links-missing-at-ramdon" class="headerlink" title="links missing at ramdon"></a>links missing at ramdon</h5><p><strong>core</strong> : self-supervised</p>
+<p><strong>methodology</strong> :</p>
+<ol>
+<li>remove links randomly</li>
+<li>predict them</li>
+</ol>
+<h5 id="links-over-time"><a href="#links-over-time" class="headerlink" title="links over time"></a>links over time</h5><p><strong>core</strong> : self-regression</p>
+<p>Given : $G[t_0,t_0’]$  express graph $G$ at time $t_0’$</p>
+<p>Output : $L$ express a list of links that be predicted to appear at time $t_1’$</p>
+<p>Evaluation : take top $n$ links in $L$ and then count how many links in it appear at time $t_1’$</p>
+<p>Methodology : </p>
+<ol>
+<li>for each $(x,y)$, compute its score $c(x,y)$</li>
+<li>decreasing score $c(x,y)$</li>
+<li>select top $n$ as predicted links</li>
+</ol>
+<h4 id="Distance-based-Feature"><a href="#Distance-based-Feature" class="headerlink" title="Distance-based Feature"></a>Distance-based Feature</h4><p>mainly include : shortest path distance  between two nodes</p>
+<p>use $s(u,v)$ express the length of shortest path between node $u$ and node $v$, and use $s(u,v)$ as the feature of $(u,v)$</p>
+<p>weakness : ignore the neighborhood’s degree</p>
+<h4 id="Local-Neighborhood-Overlap"><a href="#Local-Neighborhood-Overlap" class="headerlink" title="Local Neighborhood Overlap"></a>Local Neighborhood Overlap</h4><p><strong>common neighborhood</strong> </p>
+<p>$|N(v_1)\cap N(v_2)|$</p>
+<p><strong>Jaccard’s coefficient</strong></p>
+<p>$\frac{|N(v_1)\cap N(v_2)|}{|N(v_1)\cup N(v_2)|}$</p>
+<p><strong>Adamic-Adar index</strong></p>
+<p>encoding the <strong>node importance</strong> also</p>
+<p>$\sum_{u\in N(v_1)\cap N(v_2)} \frac 1{\log(k_u)}$</p>
+<p>Limitation : metric will be 0 if two nodes has no common neighbors but they may connected in the furture</p>
+<h4 id="Global-Neighborhood-Overlap"><a href="#Global-Neighborhood-Overlap" class="headerlink" title="Global Neighborhood Overlap"></a>Global Neighborhood Overlap</h4><p>core :  use the number of paths of all lengths between given nodes</p>
+<p>calculation : calculate by the power of Adjacency Matrix</p>
+<p>Katz index’s formulation :<br>$$<br>s_{u,v} &#x3D; \sum_{l&#x3D;1}^{\infty} \beta^l A^l\<br>S &#x3D; (I-\beta A)^{-1}-I\<br>where\ 0&lt; \beta &lt; 1<br>$$</p>
+<h3 id="3-Graph-Level-Feature"><a href="#3-Graph-Level-Feature" class="headerlink" title="3. Graph-Level Feature"></a>3. Graph-Level Feature</h3><h4 id="Kernel-Methods"><a href="#Kernel-Methods" class="headerlink" title="Kernel Methods"></a>Kernel Methods</h4><p><strong>Idea</strong> : design kernel instead of feature vector</p>
+<p><strong>Introduction</strong> :</p>
+<ol>
+<li><p>$K(G,G’)$ measures the similarity between $G$ and $G’$</p>
+</li>
+<li><p>Kernel metrix $k&#x3D;(K(G,G’))_{G,G’}$ must be positive semidefinite</p>
+</li>
+<li><p>exists a feature represent $\phi(\cdot)$ such that $K(G,G’) &#x3D; \phi(G) \phi(G’)$</p>
+</li>
+</ol>
+<h4 id="Core-Idea-of-Graph-Kernels"><a href="#Core-Idea-of-Graph-Kernels" class="headerlink" title="Core Idea of Graph Kernels"></a>Core Idea of Graph Kernels</h4><p>Bags-of-words is the main idea use in graph feature</p>
+<h4 id="Graphlet-Features"><a href="#Graphlet-Features" class="headerlink" title="Graphlet Features"></a>Graphlet Features</h4><p>Main Idea : Bags of Graphlets</p>
+<p>Given : graph $G$, graphlet list $G_k &#x3D; (g_1,g_2,…,g_{n_k})$, graphlet count vector $f_G \in R^{n_k}$, where $(f_G)_i &#x3D; #(g_i \in G)$</p>
+<p>Output : $K(G,G’) &#x3D; f_G^T f_{G^{‘}}$</p>
+<p>Problem : if $G$ and $G’$ has different sizes, that woudl greatly skew value</p>
+<p>Solutions : normalization by $h_G &#x3D; \frac{f_G}{sum(f_G)}$ and $K(G,G’) &#x3D; h_G^T h_{G^{‘}}$</p>
+<p>Limitations : NP-hard problem, time expensive</p>
+<h4 id="Weisfeiler-Lehman-Kernel"><a href="#Weisfeiler-Lehman-Kernel" class="headerlink" title="Weisfeiler-Lehman Kernel"></a>Weisfeiler-Lehman Kernel</h4><p><strong>Idea</strong> ：use neighborhood structure to iteratively enrich node vocabulary, or bags of colors</p>
+<p><strong>Methodology</strong> :</p>
+<ol>
+<li><p>Given graph G with node set V</p>
+</li>
+<li><p>Init : $c^0(v)$</p>
+</li>
+<li><p>for K steps :</p>
+<p>​	$c^{(k+1)}(v) &#x3D; hash({c^{(k)}(v),{c^{(k)}(u)}_{u\in N(v)}})$</p>
+</li>
+<li><p>count numbers of nodes with given color</p>
+</li>
+</ol>
+<p>Time Complexity : $K |E|$ </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4coqb0500019ow5br69g2ty" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-01" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-01/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:00.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-01-GNN"><a href="#Lec-01-GNN" class="headerlink" title="Lec 01 GNN"></a>Lec 01 GNN</h2><h3 id="1-Why-Graph"><a href="#1-Why-Graph" class="headerlink" title="1. Why Graph?"></a>1. Why Graph?</h3><p>Graph is general language for <strong>entities with relations</strong></p>
+<h3 id="2-Type-of-Graph"><a href="#2-Type-of-Graph" class="headerlink" title="2. Type of Graph"></a>2. Type of Graph</h3><ul>
+<li>Natural Network</li>
+<li>Graph</li>
+</ul>
+<h3 id="3-Why-Hard"><a href="#3-Why-Hard" class="headerlink" title="3. Why Hard?"></a>3. Why Hard?</h3><ul>
+<li>Arbitrary size &amp; Complex topology</li>
+<li>No reference point</li>
+<li>Dynamic</li>
+<li>multimodal</li>
+</ul>
+<h3 id="4-Process-of-supervised-graph"><a href="#4-Process-of-supervised-graph" class="headerlink" title="4. Process of supervised graph"></a>4. Process of supervised graph</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">1[RawData]--&gt;2[GraphData]--&gt;3[LearningAlgorithm]--&gt;4[Model]</span><br></pre></td></tr></table></figure>
+
+<p>Use <strong>Represent Learning</strong> instead of <strong>Feature Engineering</strong> to realize transferring raw data to graph data</p>
+<h3 id="5-Classic-Graph-ML-Tasks"><a href="#5-Classic-Graph-ML-Tasks" class="headerlink" title="5. Classic Graph ML Tasks"></a>5. Classic Graph ML Tasks</h3><ul>
+<li>Node Classification</li>
+<li>Edge Prediction</li>
+<li>Graph Classification</li>
+<li>Clustering : if nodes form a community</li>
+<li>Graph Generation</li>
+<li>Graph Evolution</li>
+</ul>
+<h3 id="6-Examples-of-Graph-ML-Tasks"><a href="#6-Examples-of-Graph-ML-Tasks" class="headerlink" title="6. Examples of Graph ML Tasks"></a>6. Examples of Graph ML Tasks</h3><p><strong>Node Level</strong></p>
+<p>predict residue’s position</p>
+<p><strong>Edge Level</strong></p>
+<p>Recommend System</p>
+<p>Predict the size effects</p>
+<p><strong>Subgraph Level</strong></p>
+<p>Traffic Prediction</p>
+<p><strong>Graph Level</strong></p>
+<p>Drug Discovery</p>
+<p>Generating novel molecules</p>
+<h3 id="7-Components-of-a-Network"><a href="#7-Components-of-a-Network" class="headerlink" title="7. Components of a Network"></a>7. Components of a Network</h3><p>$N$ : nodes or vertices</p>
+<p>$E$ : edges or links</p>
+<p>$G(N,E)$ : network or graph</p>
+<h3 id="8-Network-Classification"><a href="#8-Network-Classification" class="headerlink" title="8. Network Classification"></a>8. Network Classification</h3><p><strong>classification from Attribution</strong></p>
+<ul>
+<li>Directed &#x2F; Undirected</li>
+<li>Weighted &#x2F; Unweighted</li>
+<li>self-edge</li>
+<li>multi-graph</li>
+<li>strongly connected &#x2F; weakly connected &#x2F; disconnected</li>
+</ul>
+<p><strong>Special Class</strong></p>
+<ul>
+<li>Bipartite Graph</li>
+<li>Folded Bipartite Graph</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">flowchart TB</span><br><span class="line">subgraph Projection-V</span><br><span class="line">VA[A]</span><br><span class="line">VB[B]</span><br><span class="line">VC[C]</span><br><span class="line">VD[D]</span><br><span class="line">VA---VB</span><br><span class="line">VB---VC</span><br><span class="line">VC---VD</span><br><span class="line">VB---VD</span><br><span class="line">end</span><br><span class="line">subgraph total</span><br><span class="line">T1((1))</span><br><span class="line">T2((2))</span><br><span class="line">T3((3))</span><br><span class="line">T4((4))</span><br><span class="line">T5((5))</span><br><span class="line">T6((6))</span><br><span class="line">T7((7))</span><br><span class="line">TA[A]</span><br><span class="line">TB[B]</span><br><span class="line">TC[C]</span><br><span class="line">TD[D]</span><br><span class="line">T1 &amp; T2 &amp; T3 --- TA</span><br><span class="line">T2 &amp; T5 --- TB</span><br><span class="line">T4 &amp; T5 --- TC</span><br><span class="line">T5 &amp; T6 &amp; T7 --- TD</span><br><span class="line">end</span><br><span class="line">subgraph Projection-U</span><br><span class="line">U1((1))</span><br><span class="line">U2((2))</span><br><span class="line">U3((3))</span><br><span class="line">U4((4))</span><br><span class="line">U5((5))</span><br><span class="line">U6((6))</span><br><span class="line">U7((7))</span><br><span class="line">U1---U2---U3---U1</span><br><span class="line">U2---U5</span><br><span class="line">U6---U7---U5---U6</span><br><span class="line">U5---U4</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-Node-Degree"><a href="#9-Node-Degree" class="headerlink" title="9. Node Degree"></a>9. Node Degree</h3><p><strong>For Undirected</strong></p>
+<p>$k_i$ : the degree of node $i$</p>
+<p>$\bar k$ : the average degree of nodes</p>
+<p>$\bar k &#x3D; \frac 1 N \sum_{i&#x3D;1}^N k_i&#x3D;\frac{2|E|}{N}$ </p>
+<p><strong>For Directed</strong></p>
+<p>$k_i^{in}$ : the in-degree of node $i$</p>
+<p>$k_i^{out}$ : the out-degree of node $i$</p>
+<p>$\bar k_i^{in} &#x3D; \bar k_i^{out} &#x3D; \frac{|E|}{|N|}$</p>
+<h3 id="10-Represent-Graph"><a href="#10-Represent-Graph" class="headerlink" title="10. Represent Graph"></a>10. Represent Graph</h3><h4 id="1-Adjacency-Matrix"><a href="#1-Adjacency-Matrix" class="headerlink" title="(1) Adjacency Matrix"></a>(1) Adjacency Matrix</h4><p><strong>Element $A_{ij}$</strong><br>$$<br>A_{ij} &#x3D; \left{ \begin{array}{rcl}<br>1 &amp; , &amp; if\ link\ from\ i\ to\ j\ exists\<br>0 &amp; , &amp; otherwise<br>\end{array}\right.<br>$$<br><strong>Degrees</strong> </p>
+<p><em><strong>For Undirected</strong></em></p>
+<p>$k_i &#x3D; \sum_{j&#x3D;1}^N A_{ij}$</p>
+<p>$k_j &#x3D; \sum_{i&#x3D;1}^N A_{ij}$ </p>
+<p>$L &#x3D; \frac 12 \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
+<p><em><strong>For Directed</strong></em></p>
+<p>$k_j^{in} &#x3D; \sum_{i&#x3D;1}^{N}A_ij$</p>
+<p>$k_i^{out} &#x3D; \sum_{j&#x3D;1}^{N}A_ij$</p>
+<p>$L &#x3D; \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
+<h4 id="2-Edge-List"><a href="#2-Edge-List" class="headerlink" title="(2) Edge List"></a>(2) Edge List</h4><h4 id="3-Adjacency-List"><a href="#3-Adjacency-List" class="headerlink" title="(3) Adjacency List"></a>(3) Adjacency List</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4coqb0100009ow53sdi53sn" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" class="article-date">
@@ -412,7 +864,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4coim5m0001hkw5f7qg9vz9" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4coqb0700049ow5hm9o291v" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -463,7 +915,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4coim5e0000hkw5esa4dzep" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4coqb0800059ow5936ecdz9" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -506,11 +958,23 @@
       <ul>
         
           <li>
-            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
           </li>
         
           <li>
-            <a href="/2024/12/06/hello-world/">Hello World</a>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
           </li>
         
       </ul>

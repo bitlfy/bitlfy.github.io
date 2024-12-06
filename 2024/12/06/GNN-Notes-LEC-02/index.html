@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN Notes : LEC 02 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 02 Traditional feature-base method for GNN1. Node-Level FeatureNode Degreecategory : importance-based, structure-based weakness : treat all neighboring nodes equally Node Centralitycategory : impo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN Notes : LEC 02">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 02 Traditional feature-base method for GNN1. Node-Level FeatureNode Degreecategory : importance-based, structure-based weakness : treat all neighboring nodes equally Node Centralitycategory : impo">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-06T11:49:05.000Z">
+<meta property="article:modified_time" content="2024-12-06T11:50:36.071Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-02" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-02/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:05.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN Notes : LEC 02
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-02-Traditional-feature-base-method-for-GNN"><a href="#Lec-02-Traditional-feature-base-method-for-GNN" class="headerlink" title="Lec 02 Traditional feature-base method for GNN"></a>Lec 02 Traditional feature-base method for GNN</h2><h3 id="1-Node-Level-Feature"><a href="#1-Node-Level-Feature" class="headerlink" title="1. Node-Level Feature"></a>1. Node-Level Feature</h3><h4 id="Node-Degree"><a href="#Node-Degree" class="headerlink" title="Node Degree"></a>Node Degree</h4><p><strong>category</strong> : importance-based, structure-based</p>
+<p>weakness : treat all neighboring nodes equally</p>
+<h4 id="Node-Centrality"><a href="#Node-Centrality" class="headerlink" title="Node Centrality"></a>Node Centrality</h4><p><strong>category</strong> : importance-based</p>
+<p><strong>core</strong> : take the node importance in a graph</p>
+<h5 id="eigenvector-centrality"><a href="#eigenvector-centrality" class="headerlink" title="eigenvector centrality"></a>eigenvector centrality</h5><p><strong>core</strong> : v is important if its neighboring nodes are important</p>
+<p><strong>formula</strong> :<br>$$<br>\begin{align}<br>&amp;c_v &#x3D; \frac{1}{\lambda} \sum_{u\in N(v)} c_u\</p>
+<p>\Leftrightarrow&amp;\lambda c &#x3D; A c<br>\end{align}<br>$$</p>
+<h5 id="bewteeness-centrality"><a href="#bewteeness-centrality" class="headerlink" title="bewteeness centrality"></a>bewteeness centrality</h5><p><strong>core</strong> : v is important if v lies on many shortest paths between two nodes</p>
+<p><strong>formula</strong> :</p>
+<p>use $p(u,v)$ express the number of shortest path between $u$ and $v$</p>
+<p>use $p(v,s,t)$ express the number of shortest path between $s$ and $t$ via $v$<br>$$<br>c_v &#x3D; \sum_{v\ne s\ne t}\frac{p(s,t)}{p(s,t,v)}<br>$$</p>
+<h5 id="closeness-centrality"><a href="#closeness-centrality" class="headerlink" title="closeness centrality"></a>closeness centrality</h5><p><strong>core</strong> : v is important if v has small shortest path lengths to all other nodes</p>
+<p><strong>formula</strong> : </p>
+<p>use $p(u,v)$ express the shortest path length between node $u$ and $v$<br>$$<br>c_v &#x3D; \frac 1 {\sum_{u\ne v}p(u,v)}<br>$$</p>
+<h4 id="Clustering-coefficient"><a href="#Clustering-coefficient" class="headerlink" title="Clustering coefficient"></a>Clustering coefficient</h4><p><strong>category</strong> : structure-based</p>
+<p><strong>formula</strong> : </p>
+<p>use $e(N(v))$ express the number of edge among $N(v)$<br>$$<br>c_v &#x3D; \frac{e(N(v))}{C_{k_v}^2}<br>$$</p>
+<h4 id="Graphlet-Degree-Vector"><a href="#Graphlet-Degree-Vector" class="headerlink" title="Graphlet Degree Vector"></a>Graphlet Degree Vector</h4><p><strong>category</strong> : structure-based</p>
+<p><strong>core</strong> : use the number of graphlet with node $v$ express $v$’s feature</p>
+<h3 id="2-Link-Level-Feature"><a href="#2-Link-Level-Feature" class="headerlink" title="2. Link-Level Feature"></a>2. Link-Level Feature</h3><h4 id="Task-of-Link-Prediction"><a href="#Task-of-Link-Prediction" class="headerlink" title="Task of Link Prediction"></a>Task of Link Prediction</h4><p>Given : existing links</p>
+<p>Aim : predict new links</p>
+<p>Key : design features to express a pair of nodes</p>
+<h4 id="Formulations-of-link-predictions"><a href="#Formulations-of-link-predictions" class="headerlink" title="Formulations of link predictions"></a>Formulations of link predictions</h4><h5 id="links-missing-at-ramdon"><a href="#links-missing-at-ramdon" class="headerlink" title="links missing at ramdon"></a>links missing at ramdon</h5><p><strong>core</strong> : self-supervised</p>
+<p><strong>methodology</strong> :</p>
+<ol>
+<li>remove links randomly</li>
+<li>predict them</li>
+</ol>
+<h5 id="links-over-time"><a href="#links-over-time" class="headerlink" title="links over time"></a>links over time</h5><p><strong>core</strong> : self-regression</p>
+<p>Given : $G[t_0,t_0’]$  express graph $G$ at time $t_0’$</p>
+<p>Output : $L$ express a list of links that be predicted to appear at time $t_1’$</p>
+<p>Evaluation : take top $n$ links in $L$ and then count how many links in it appear at time $t_1’$</p>
+<p>Methodology : </p>
+<ol>
+<li>for each $(x,y)$, compute its score $c(x,y)$</li>
+<li>decreasing score $c(x,y)$</li>
+<li>select top $n$ as predicted links</li>
+</ol>
+<h4 id="Distance-based-Feature"><a href="#Distance-based-Feature" class="headerlink" title="Distance-based Feature"></a>Distance-based Feature</h4><p>mainly include : shortest path distance  between two nodes</p>
+<p>use $s(u,v)$ express the length of shortest path between node $u$ and node $v$, and use $s(u,v)$ as the feature of $(u,v)$</p>
+<p>weakness : ignore the neighborhood’s degree</p>
+<h4 id="Local-Neighborhood-Overlap"><a href="#Local-Neighborhood-Overlap" class="headerlink" title="Local Neighborhood Overlap"></a>Local Neighborhood Overlap</h4><p><strong>common neighborhood</strong> </p>
+<p>$|N(v_1)\cap N(v_2)|$</p>
+<p><strong>Jaccard’s coefficient</strong></p>
+<p>$\frac{|N(v_1)\cap N(v_2)|}{|N(v_1)\cup N(v_2)|}$</p>
+<p><strong>Adamic-Adar index</strong></p>
+<p>encoding the <strong>node importance</strong> also</p>
+<p>$\sum_{u\in N(v_1)\cap N(v_2)} \frac 1{\log(k_u)}$</p>
+<p>Limitation : metric will be 0 if two nodes has no common neighbors but they may connected in the furture</p>
+<h4 id="Global-Neighborhood-Overlap"><a href="#Global-Neighborhood-Overlap" class="headerlink" title="Global Neighborhood Overlap"></a>Global Neighborhood Overlap</h4><p>core :  use the number of paths of all lengths between given nodes</p>
+<p>calculation : calculate by the power of Adjacency Matrix</p>
+<p>Katz index’s formulation :<br>$$<br>s_{u,v} &#x3D; \sum_{l&#x3D;1}^{\infty} \beta^l A^l\<br>S &#x3D; (I-\beta A)^{-1}-I\<br>where\ 0&lt; \beta &lt; 1<br>$$</p>
+<h3 id="3-Graph-Level-Feature"><a href="#3-Graph-Level-Feature" class="headerlink" title="3. Graph-Level Feature"></a>3. Graph-Level Feature</h3><h4 id="Kernel-Methods"><a href="#Kernel-Methods" class="headerlink" title="Kernel Methods"></a>Kernel Methods</h4><p><strong>Idea</strong> : design kernel instead of feature vector</p>
+<p><strong>Introduction</strong> :</p>
+<ol>
+<li><p>$K(G,G’)$ measures the similarity between $G$ and $G’$</p>
+</li>
+<li><p>Kernel metrix $k&#x3D;(K(G,G’))_{G,G’}$ must be positive semidefinite</p>
+</li>
+<li><p>exists a feature represent $\phi(\cdot)$ such that $K(G,G’) &#x3D; \phi(G) \phi(G’)$</p>
+</li>
+</ol>
+<h4 id="Core-Idea-of-Graph-Kernels"><a href="#Core-Idea-of-Graph-Kernels" class="headerlink" title="Core Idea of Graph Kernels"></a>Core Idea of Graph Kernels</h4><p>Bags-of-words is the main idea use in graph feature</p>
+<h4 id="Graphlet-Features"><a href="#Graphlet-Features" class="headerlink" title="Graphlet Features"></a>Graphlet Features</h4><p>Main Idea : Bags of Graphlets</p>
+<p>Given : graph $G$, graphlet list $G_k &#x3D; (g_1,g_2,…,g_{n_k})$, graphlet count vector $f_G \in R^{n_k}$, where $(f_G)_i &#x3D; #(g_i \in G)$</p>
+<p>Output : $K(G,G’) &#x3D; f_G^T f_{G^{‘}}$</p>
+<p>Problem : if $G$ and $G’$ has different sizes, that woudl greatly skew value</p>
+<p>Solutions : normalization by $h_G &#x3D; \frac{f_G}{sum(f_G)}$ and $K(G,G’) &#x3D; h_G^T h_{G^{‘}}$</p>
+<p>Limitations : NP-hard problem, time expensive</p>
+<h4 id="Weisfeiler-Lehman-Kernel"><a href="#Weisfeiler-Lehman-Kernel" class="headerlink" title="Weisfeiler-Lehman Kernel"></a>Weisfeiler-Lehman Kernel</h4><p><strong>Idea</strong> ：use neighborhood structure to iteratively enrich node vocabulary, or bags of colors</p>
+<p><strong>Methodology</strong> :</p>
+<ol>
+<li><p>Given graph G with node set V</p>
+</li>
+<li><p>Init : $c^0(v)$</p>
+</li>
+<li><p>for K steps :</p>
+<p>​	$c^{(k+1)}(v) &#x3D; hash({c^{(k)}(v),{c^{(k)}(u)}_{u\in N(v)}})$</p>
+</li>
+<li><p>count numbers of nodes with given color</p>
+</li>
+</ol>
+<p>Time Complexity : $K |E|$ </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4coqb0500019ow5br69g2ty" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-03/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GNN Notes : LEC 03
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-01/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GNN Notes : LEC 01</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN Notes : LEC 04 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 04 PageRank and Link Analysis1. PageRankmain ideaRegard links as votes : Page is more important if it has more links Different Importance of links : links from important links are more important C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN Notes : LEC 04">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 04 PageRank and Link Analysis1. PageRankmain ideaRegard links as votes : Page is more important if it has more links Different Importance of links : links from important links are more important C">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-06T11:49:12.000Z">
+<meta property="article:modified_time" content="2024-12-06T11:50:51.416Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-04" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-04/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:12.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN Notes : LEC 04
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-04-PageRank-and-Link-Analysis"><a href="#Lec-04-PageRank-and-Link-Analysis" class="headerlink" title="Lec 04 PageRank and Link Analysis"></a>Lec 04 PageRank and Link Analysis</h2><h3 id="1-PageRank"><a href="#1-PageRank" class="headerlink" title="1. PageRank"></a>1. PageRank</h3><h4 id="main-idea"><a href="#main-idea" class="headerlink" title="main idea"></a>main idea</h4><p>Regard links as votes : Page is more important if it has more links</p>
+<p>Different Importance of links : links from important links are more important</p>
+<p>Combination : A point is important if it is pointed by other important pages</p>
+<h4 id="Formula"><a href="#Formula" class="headerlink" title="Formula"></a>Formula</h4><p><strong>Common Formulation</strong></p>
+<p>$r_i$ : the $i$-th node’s rank or score</p>
+<p>$d_i$ : the out-degree of $i$-th node<br>$$<br>r_j &#x3D; \sum_{i-&gt;j}\frac{r_i}{d_i}<br>$$<br><strong>Matrix Formulation</strong></p>
+<p>$A_{ij}$ : equal to 1 if edge from node $i$ to $j$ exists, else 0</p>
+<p>$sum_by_row(A)$ : a vector means the out-degrees of nodes in graph</p>
+<p>Stochastic adjacency matrix M : if $j-&gt;i$, $M_{ij} &#x3D; 1 &#x2F; d_j$</p>
+<p>$M &#x3D; (A &#x2F; sum_by_row(A))^T$</p>
+<p>so that $r &#x3D; M \cdot r$</p>
+<p><strong>Eigenvector Formulation</strong></p>
+<p>we could regard $r &#x3D; M \cdot r$ as $1\cdot r &#x3D; M \cdot r$, so that $r$ would be the eigenvector with the eigenvalue 1</p>
+<h3 id="2-How-to-solve-PageRank"><a href="#2-How-to-solve-PageRank" class="headerlink" title="2. How to solve PageRank ?"></a>2. How to solve PageRank ?</h3><h4 id="Power-Iteration"><a href="#Power-Iteration" class="headerlink" title="Power Iteration"></a>Power Iteration</h4><p><strong>algorithm</strong> :</p>
+<ol>
+<li><p>assign each node an initial page rank</p>
+</li>
+<li><p>repeat until convergence $\sum_i|r_i^{t+1} - r_i^t| &lt;&#x3D; \varepsilon \Leftrightarrow |r^{t+1}-r^t|_1 &lt;&#x3D;varepsilon$:<br>$$<br>\begin{align}<br>&amp;r_j^{t+1} &#x3D; \sum_{i-&gt;j} \frac{r_i^t}{d_i}\<br>\Leftrightarrow &amp;r &#x3D; M\cdot r<br>\end{align}<br>$$</p>
+</li>
+</ol>
+<h4 id="Problem-converge"><a href="#Problem-converge" class="headerlink" title="Problem : converge"></a>Problem : converge</h4><p><strong>problem in converge</strong> :</p>
+<p>dead ends problem : no out-links</p>
+<p>Spider traps : all out-links within the group</p>
+<p><strong>solution</strong> : teleport</p>
+<p>At each time step, with the probability $\beta$, follow a link at random; with the probability $1-\beta$, jump to a random node</p>
+<p>commonly, $0.8 &lt; \beta &lt;0.9$ </p>
+<p>Especially, when surfer arrive at a dead end, it has $1.0$ probability to jump to a random node</p>
+<p>Formulation as follow (assume that $\sum_{i} r_i &#x3D; 1$):<br>$$<br>\begin{align}<br>&amp;r_j&#x3D;\sum_{i\rightarrow j}\beta\frac{r_i}{d_i} + \frac1N(1-\beta)\<br>\Leftrightarrow &amp;P &#x3D; \beta \cdot M + \frac1N(1-\beta)<br>\end{align}<br>$$</p>
+<h3 id="3-Personalized-PageRank-and-Random-Walks-with-Restarts"><a href="#3-Personalized-PageRank-and-Random-Walks-with-Restarts" class="headerlink" title="3. Personalized PageRank and Random Walks with Restarts"></a>3. Personalized PageRank and Random Walks with Restarts</h3><h4 id="PageRank-PPR-and-RWR"><a href="#PageRank-PPR-and-RWR" class="headerlink" title="PageRank, PPR and RWR"></a>PageRank, PPR and RWR</h4><p><strong>difference</strong> : the points could be teleported to </p>
+<p>PageRank : teleport to anywhere on the graph</p>
+<p>PPR : teleport to only a subset of graph</p>
+<p>RWR : always teleport to the staring point</p>
+<h4 id="Random-Walks-with-Restarts"><a href="#Random-Walks-with-Restarts" class="headerlink" title="Random Walks with Restarts"></a>Random Walks with Restarts</h4><p><strong>Idea</strong> : </p>
+<ol>
+<li>Every node has some importance</li>
+<li>Importance gets evenly split among all edges and pushed to the neighbors</li>
+</ol>
+<p><strong>algorithm</strong> :</p>
+<ol>
+<li>Given a set of query_nodes $Q$, randomly select a node $q_i$ and make a random walk</li>
+<li>make a step to a random neighbor and record visit  or with $1 -\beta$ probability to restart from $q_j \in Q$ </li>
+<li>the nodes with the highest visit count have highest proximity to $Q$</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">item = Q.sample_by_weight()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(N_STEPS):</span><br><span class="line">	item = item.get_random_neighbor()</span><br><span class="line">    item.visited_time += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> random &gt;= beta :</span><br><span class="line">        item = Q.sample_by_weight()</span><br></pre></td></tr></table></figure>
+
+<p><strong>considers</strong> : </p>
+<ul>
+<li>multiple connections</li>
+<li>multiple paths</li>
+<li>directed and undirected connection</li>
+<li>degree of node</li>
+</ul>
+<h3 id="4-Matrix-Factorization"><a href="#4-Matrix-Factorization" class="headerlink" title="4. Matrix Factorization"></a>4. Matrix Factorization</h3><h4 id="Embedding-and-Matrix-Factorization"><a href="#Embedding-and-Matrix-Factorization" class="headerlink" title="Embedding and Matrix Factorization"></a>Embedding and Matrix Factorization</h4><p>Given : <strong>measure the similarity of nodes with adjacency matrix $A$</strong></p>
+<p>then : $Z^TZ \approx A$</p>
+<p>so that : $\arg \min_Z ||A-Z^TZ||_2$</p>
+<p>Exactly : we make matrix factorization of adjacency matrix $A$</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4coqb0600029ow57yfj86wn" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-03/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GNN Notes : LEC 03</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

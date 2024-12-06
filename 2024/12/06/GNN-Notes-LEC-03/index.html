@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN Notes : LEC 03 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 03 Node Embedding1. OverviewGoal : Efficient task-independent feature learning for ML with graph Why Embedding ?  similarity of embedding space indicate that in origin space encode information cou">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN Notes : LEC 03">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 03 Node Embedding1. OverviewGoal : Efficient task-independent feature learning for ML with graph Why Embedding ?  similarity of embedding space indicate that in origin space encode information cou">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-06T11:49:08.000Z">
+<meta property="article:modified_time" content="2024-12-06T11:50:53.391Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-03" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/GNN-Notes-LEC-03/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T11:49:08.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN Notes : LEC 03
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-03-Node-Embedding"><a href="#Lec-03-Node-Embedding" class="headerlink" title="Lec 03 Node Embedding"></a>Lec 03 Node Embedding</h2><h3 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a>1. Overview</h3><p><strong>Goal</strong> : Efficient task-independent feature learning for ML with graph</p>
+<p><strong>Why Embedding</strong> ?</p>
+<ol>
+<li>similarity of embedding space indicate that in origin space</li>
+<li>encode information</li>
+<li>could used in many downstream tasks</li>
+</ol>
+<h3 id="2-Encoder-and-Decoder"><a href="#2-Encoder-and-Decoder" class="headerlink" title="2. Encoder and Decoder"></a>2. Encoder and Decoder</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">subgraph Embedding Space</span><br><span class="line">a((ZA))</span><br><span class="line">b((ZB))</span><br><span class="line">c((ZC))</span><br><span class="line">d((ZD))</span><br><span class="line">u((ZU))</span><br><span class="line">v((ZV))</span><br><span class="line">end</span><br><span class="line">subgraph Origin Network</span><br><span class="line">1((A))</span><br><span class="line">2((B))</span><br><span class="line">3((C))</span><br><span class="line">4((D))</span><br><span class="line">5((U))</span><br><span class="line">6((V))</span><br><span class="line">1---2</span><br><span class="line">1---3</span><br><span class="line">1---4</span><br><span class="line">5---1</span><br><span class="line">6---1</span><br><span class="line">end</span><br><span class="line">ARROW[Embedding To]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Learning-Node-Embedding"><a href="#Learning-Node-Embedding" class="headerlink" title="Learning Node Embedding"></a>Learning Node Embedding</h4><ol>
+<li>Encoder maps from nodes to embeddings</li>
+<li>define a similarity function in origin space</li>
+<li>Decoder maps from embeddings to similarity scores</li>
+<li>optimize the parameters of encoder</li>
+</ol>
+<h3 id="3-Shallow-Encoding-Embedding-lookup"><a href="#3-Shallow-Encoding-Embedding-lookup" class="headerlink" title="3. Shallow Encoding : Embedding lookup"></a>3. Shallow Encoding : Embedding lookup</h3><p>$$<br>Enc(v_i) &#x3D; z_{v_i} &#x3D; Z \cdot v_i\<br>(v_i)_j &#x3D; \left{ \begin{array}{rcl}<br>0,i\ne j\<br>1,i&#x3D;j<br>\end{array} \right.\<br>Z \in R^{d\times |V|}<br>$$</p>
+<p><strong>Weakness</strong> : need to optimize a large number of parameters</p>
+<h3 id="4-Random-Walk-Overview"><a href="#4-Random-Walk-Overview" class="headerlink" title="4. Random Walk : Overview"></a>4. Random Walk : Overview</h3><h4 id="Algorithm-of-Random-Walk"><a href="#Algorithm-of-Random-Walk" class="headerlink" title="Algorithm of Random Walk"></a>Algorithm of Random Walk</h4><ol>
+<li><p>Run short fixed-length random walks starting from each node $u$ with strategy $R$</p>
+</li>
+<li><p>collect $N_R(u)$ for each node $u$, where $N_R(u)$ is a multi-set including all node access in step 1</p>
+</li>
+<li><p>optimize the loss function gradient descent<br>$$<br>\arg \min_{z_u,u\in V} \sum_{u \in V} \sum_{v \in N_R(u)} - \log \frac{\exp(z_u^Tz_v)}{\sum_{n\in V} z_u^Tz_n}<br>$$</p>
+</li>
+</ol>
+<h4 id="Weakness-time-expensive"><a href="#Weakness-time-expensive" class="headerlink" title="Weakness : time expensive"></a>Weakness : time expensive</h4><p>The time complexity of loss function calculating is $O(|N|^2)$, that means it is <strong>time expensive</strong></p>
+<h4 id="Solution-Negative-Sample"><a href="#Solution-Negative-Sample" class="headerlink" title="Solution : Negative Sample"></a>Solution : Negative Sample</h4><p>To simplify the loss function’s calculating, use the formula as follow<br>$$<br>\log \frac{\exp(z_u^Tz_v)}{\sum_{n\in V} z_u^Tz_n} \approx \log (\sigma(z_u^Tz_v)) - \sum_{i&#x3D;1}^k \log(\sigma(z_u^Tz_{n_i}))\<br>\sigma(x) &#x3D; \frac{1}{1+\exp(-x)}\<br>$$<br> In the formula, $n_i$ express the node got by sample from random distribution</p>
+<p>Proved by the practice, the negative sample have good performance when $k$ just in $[5,20]$</p>
+<h3 id="5-The-Random-Walk-Strategy"><a href="#5-The-Random-Walk-Strategy" class="headerlink" title="5. The Random Walk Strategy"></a>5. The Random Walk Strategy</h3><h4 id="5-1-Deep-Walk"><a href="#5-1-Deep-Walk" class="headerlink" title="5.1 Deep Walk"></a>5.1 Deep Walk</h4><p>Just run fixed-length, unbiased random walks</p>
+<p>Weakness : too constrained</p>
+<h4 id="5-2-Node2Vec"><a href="#5-2-Node2Vec" class="headerlink" title="5.2 Node2Vec"></a>5.2 Node2Vec</h4><p><strong>Idea</strong> : use flexible, biased random walks that can trade off between local and global, where local nodes’ explored by BFS while global by DFS</p>
+<p><strong>Super Parameters</strong></p>
+<ol>
+<li>return parameter $p$ : depend the probability to return to previous node</li>
+<li>In-out parameter $q$ : depend the probability to BFS or DFS</li>
+</ol>
+<p><strong>Example For node2vec</strong></p>
+<p>For the graph below, assume previous node is $A$ and current node is $B$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">1((A))</span><br><span class="line">subgraph Distance1</span><br><span class="line">2((B))</span><br><span class="line">3((C))</span><br><span class="line">end</span><br><span class="line">subgraph Distance2</span><br><span class="line">5((E))</span><br><span class="line">6((F))</span><br><span class="line">end</span><br><span class="line">1---2</span><br><span class="line">1---3</span><br><span class="line">2---5</span><br><span class="line">2---6</span><br></pre></td></tr></table></figure>
+
+<p>The next node would depend by random sample from the distribution as follow :<br>$$<br>nextnode &#x3D; \left{\begin{array}{rcl}<br>A,prob &#x3D; 1 &#x2F; p\<br>C,prob &#x3D; 1 &#x2F; q\<br>E,prob &#x3D; 1\<br>F,prob &#x3D; 1<br>\end{array}\right.\<br>$$<br>Attention : the probabilities is <strong>not normalized</strong></p>
+<h3 id="6-Entire-Graph-Embedding"><a href="#6-Entire-Graph-Embedding" class="headerlink" title="6. Entire Graph Embedding"></a>6. Entire Graph Embedding</h3><h4 id="6-1-Sum-or-average"><a href="#6-1-Sum-or-average" class="headerlink" title="6.1 Sum or average"></a>6.1 Sum or average</h4><p><strong>algorithm</strong> :</p>
+<ol>
+<li>run a standard node embedding technique on graph G</li>
+<li>sum or average all node embeddings in the G</li>
+</ol>
+<h4 id="6-2-Virtual-Node"><a href="#6-2-Virtual-Node" class="headerlink" title="6.2 Virtual Node"></a>6.2 Virtual Node</h4><p><strong>algorithm</strong> : </p>
+<ol>
+<li>use a virtual node represent the entire graph, maybe have a series of edges with node in the graph</li>
+<li>run a standard node embedding technique to get the virtual node’s embedding</li>
+</ol>
+<h4 id="6-3-Anonymous-Walk-Embedding-v1"><a href="#6-3-Anonymous-Walk-Embedding-v1" class="headerlink" title="6.3 Anonymous Walk Embedding : v1"></a>6.3 Anonymous Walk Embedding : v1</h4><p><strong>algorithm</strong> : </p>
+<ol>
+<li>run a random walk on the graph $G$</li>
+<li>anonymization : for each node in a random walk result, replace its name with the index of the first time it occur</li>
+<li>for all of anonymous walk produced by 2, count the number of all kinds of anonymous walk</li>
+<li>Embedding $Z_G[i]$ represent the score or probability of $i$-th anonymous walk</li>
+</ol>
+<p><strong>the dimension of embedding $Z_G$</strong>:</p>
+<p>Because the kind number of anonymous walk <strong>depend on the length of walk</strong>, so the dimension of embedding depend on it too.</p>
+<p><strong>How many random walks m do we need?</strong></p>
+<p>We want the distribution to have <strong>error of more than $\varepsilon$ with probability less than $\delta$</strong><br>$$<br>m &#x3D; \lceil \frac 2 {\varepsilon^2(\log(2^n-2)-\log(\delta))} \rceil<br>$$</p>
+<h4 id="6-4-Anonymous-Walk-Embedding-v2"><a href="#6-4-Anonymous-Walk-Embedding-v2" class="headerlink" title="6.4 Anonymous Walk Embedding : v2"></a>6.4 Anonymous Walk Embedding : v2</h4><p><strong>signals</strong> : </p>
+<p>$\eta$ : the number of samples, the “sample” mean the sum of window number could be extracted from all anonymous walk</p>
+<p>$Z$ : the embeddings of walks, $z_i$ express $i$-th specific type of anonymous walk</p>
+<p>$\Delta$ : the window size</p>
+<p>$z_G$ : the embedding of the entire graph $G$</p>
+<p>$w_{i,j}$ : the $j$-th anonymous walk in the series sampled starting from node $i$  </p>
+<p><strong>algorithm</strong> :</p>
+<p>learn the embeddings of anonymous walks $Z &#x3D; {z_i|i&#x3D;1,2,…,\eta}$ as well as $z_G$</p>
+<p>a) for each node i, starting from it and sample anonymous walks randomly, get a series of walks called $[w_{i1},w_{i2},…,w_{iT}]$</p>
+<p>b) for a window size $\Delta$, learn to predict walks that co-occur<br>$$<br>\arg \min_{Z,z_G,b,U} \sum_{i \in G }\sum_{t&#x3D;\Delta}^{T-\Delta} -\log P(w_{i,t}|{w_{i,t-\Delta},w_{i,t-\Delta+1},…,w_{i,t+\Delta},z_G})\<br>P(w_{i,t}|{w_{i,t-\Delta},w_{i,t-\Delta+1},…,w_{i,t+\Delta},z_G}) &#x3D; \frac{\exp(y(w_{i,t}))}{\sum_{j&#x3D;1}^\eta \exp(y(w_j))}\<br>y(w) &#x3D; b + U (cat(\frac 1 {2\Delta}\sum_{i&#x3D;-\Delta}^\Delta z_i,z_G))<br>$$</p>
+<h3 id="7-How-to-use-Embeddings"><a href="#7-How-to-use-Embeddings" class="headerlink" title="7. How to use Embeddings"></a>7. How to use Embeddings</h3><ul>
+<li><p><strong>Clustering</strong> by point $z_i$</p>
+<ul>
+<li>community detection</li>
+</ul>
+</li>
+<li><p><strong>Node classification</strong> by point $z_i$</p>
+<ul>
+<li>predict the label of node</li>
+</ul>
+</li>
+<li><p><strong>Link prediction</strong> : predict edge $(i,j)$ based on $(z_i,z_j)$</p>
+<ul>
+<li>concatenate : $[z_i,z_j]$</li>
+<li>Hadamard :  $z_i * z_j$</li>
+<li>Sum &#x2F; Avg : $z_i + z_j$</li>
+<li>Distance : $||z_i-z_j||_2$</li>
+</ul>
+</li>
+<li><p><strong>Graph classification</strong> by $z_G$</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4coqb0700039ow54i53ho29" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-04/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GNN Notes : LEC 04
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/12/06/GNN-Notes-LEC-02/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GNN Notes : LEC 02</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
