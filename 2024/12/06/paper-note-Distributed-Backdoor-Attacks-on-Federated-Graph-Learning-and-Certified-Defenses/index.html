@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Distributed Backdoor Attacks on Federated Graph Learning and Certified DefensesAbstractbackground backdoor attacks ： inject backdoor trigger into training data so that the trained model could output a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Distributed Backdoor Attacks on Federated Graph Learning and Certified DefensesAbstractbackground backdoor attacks ： inject backdoor trigger into training data so that the trained model could output a">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-06T09:35:05.000Z">
+<meta property="article:modified_time" content="2024-12-06T10:09:31.960Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" class="article-date">
+  <time class="dt-published" datetime="2024-12-06T09:35:05.000Z" itemprop="datePublished">2024-12-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses"><a href="#Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses" class="headerlink" title="Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses"></a>Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><h4 id="background"><a href="#background" class="headerlink" title="background"></a>background</h4><ul>
+<li>backdoor attacks ： inject backdoor trigger into training data so that the trained model could output as attacker desired</li>
+<li>No defense exist for FedGL against backdoor attack</li>
+</ul>
+<h4 id="contribution"><a href="#contribution" class="headerlink" title="contribution"></a>contribution</h4><ol>
+<li><p>Attack Generator : effective, stealthy, persistent backdoor attack on FedGL and its generator</p>
+</li>
+<li><p>Uselessness of Empirical defenses : empirical defenses are hard to detect generated triggers</p>
+</li>
+<li><p>Certified defense method : division plus vote-base classifier</p>
+</li>
+<li><p>Robustness and Tightness of Classifier</p>
+</li>
+<li><p>Test on dataset : 90% accuracy and completely defense for self-build generator</p>
+</li>
+</ol>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><h4 id="background-1"><a href="#background-1" class="headerlink" title="background"></a><strong>background</strong></h4><ol>
+<li>ML for graph developing</li>
+<li>the private data be taken seriously</li>
+<li>FedGL used to solve the data isolation or data private</li>
+<li>non-graph FL is vulnerable to backdoor attacks, but for graph data is underexplored</li>
+</ol>
+<h4 id="Backdoor-Attack-for-FedGL"><a href="#Backdoor-Attack-for-FedGL" class="headerlink" title="Backdoor Attack for FedGL"></a>Backdoor Attack for FedGL</h4><p><strong>challenges</strong></p>
+<ol>
+<li>various sizes of graphs</li>
+<li>important pixels in images are close for non-graph,but different for graph</li>
+<li>not only nodes but also edges should be considered</li>
+<li>randomly generates subgraphs for attacking has bad performance</li>
+</ol>
+<p><strong>Optimize</strong></p>
+<p>Weakness of current method : <em><strong>random nature</strong></em> $\rightarrow$ take <em><strong>individual and client information</strong></em> into consideration</p>
+<p>Opt-GDBA : adaptively optimize the size and shape of subgraph trigger and use the information of graph and client</p>
+<p>Modules of Opt-GDBA :</p>
+<ol>
+<li><p>input nodes and edges’ features, output the importance score of nodes</p>
+</li>
+<li><p>learning the trigger location by nodes’ importance scores, which includes two schemes, Definable-Trigger and Customized-Trigger</p>
+</li>
+<li><p>learning the trigger shape given the location, nodes &amp; edges attention and local trigger differentiation mechanisms</p>
+</li>
+</ol>
+<h4 id="Defense-for-Backdoor-Attacks"><a href="#Defense-for-Backdoor-Attacks" class="headerlink" title="Defense for Backdoor Attacks"></a>Defense for Backdoor Attacks</h4><p>Empirical defenses : bad performance on Opt-GDBA, and always broken by adaptive attacks</p>
+<p><strong>targets</strong></p>
+<ol>
+<li>predict correct label for bounded size picture even with injecting</li>
+<li>predict non-target label for backdoor picture</li>
+</ol>
+<p><strong>Challenges</strong></p>
+<ol>
+<li>the vary of testing graphs</li>
+<li>not rely on specific model</li>
+<li>trigger could perturb edges and nodes</li>
+<li>a determinate guarantee</li>
+<li>non-graph data require same size input, which could not use in graph data</li>
+<li>certified defenses of graph data is insufficient</li>
+</ol>
+<p><strong>Majority-voting based certified defense</strong></p>
+<p>critical steps:</p>
+<ol>
+<li>divide graph into subgraphs which are non-overlapped each other</li>
+<li>use majority-voting predict these subgraphs to make sure the number gap between injected graph and not-injected graph</li>
+<li>prove robustness</li>
+</ol>
+<h4 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h4><p><strong>Opt-GDBA</strong></p>
+<p>Dataset : 6 dataset</p>
+<p>Result : </p>
+<ol>
+<li>30%-46% on backdoor performance, and less nodes and edges trigger</li>
+<li>Customized-Trigger is more stealthy than Definable-Trigger</li>
+<li>backdoor graphs are persistent and hard to detect</li>
+</ol>
+<p><strong>Defense</strong></p>
+<p>Result:</p>
+<ol>
+<li>without attack for 20 edges and nodes in total in some case</li>
+<li>the certified accuracy in all dataset is 0</li>
+</ol>
+<h3 id="Background-and-Problem-Definition"><a href="#Background-and-Problem-Definition" class="headerlink" title="Background and Problem Definition"></a>Background and Problem Definition</h3><h4 id="FedGL"><a href="#FedGL" class="headerlink" title="FedGL"></a>FedGL</h4><p><strong>GL definition</strong></p>
+<p>$\nu$ : nodes set</p>
+<p>$\varepsilon$ ： edges set</p>
+<p>$d$ ：the number of features of nodes</p>
+<p>$X \in R^{|\nu|\times d}$ : node features matrix</p>
+<p>$A \in{0,1}^{|\nu|\times|\nu|}$ : adjacency matrix</p>
+<p>$G$ : $(\nu,\varepsilon,A)$</p>
+<p>$\gamma$ : labels set</p>
+<p>task : $f : G \rightarrow \gamma$</p>
+<p><strong>FedGL definition</strong></p>
+<p>$C$ : clients set</p>
+<p>$G^i$ : training graph dataset in client $i$</p>
+<p>steps :</p>
+<ol>
+<li>In t-th round, server randomly choose <strong>a subset of clients</strong> $C_t$ and <strong>broadcast the global model</strong> $\theta_t$ on server</li>
+<li>client $i \in C_t$ u<strong>pdate its local model</strong> $\theta_t^i$  using its local data $G^i$ and $\theta_t$ and <strong>submit</strong> updated $\theta_t^i$ to server</li>
+<li>server <strong>aggregate</strong> the $C_t$ models {$\theta_t^i, i \in C_t$} and <strong>learn global model</strong> $\theta_{t+1}$</li>
+</ol>
+<h4 id="Backdoor-Attack-for-FedGL-1"><a href="#Backdoor-Attack-for-FedGL-1" class="headerlink" title="Backdoor Attack for FedGL"></a>Backdoor Attack for FedGL</h4><p>Method : inject a subgraph trigger into training graphs with target label</p>
+<p>CBA : Centralized Backdoor Attack</p>
+<p>DBA : Distributed Backdoor Attack</p>
+<p>Rand : the randomness of shape and location of triggers</p>
+<p><strong>Rand-GCBA</strong></p>
+<p>limitations : </p>
+<ol>
+<li><p>all attacker use same trigger $\kappa$</p>
+</li>
+<li><p>randomly sample a subset of nodes from data graph as trigger location and replace with trigger $\kappa$</p>
+</li>
+</ol>
+<p>representation :</p>
+<p>$G_j^i$ : $j$-th graph for client $i$</p>
+<p>$R(G_j^i,\kappa)$ : generate backdoor by limitation 2</p>
+<p>$y_B$ : backdoor’s target label</p>
+<p>$G^i_B &#x3D; {R(G_j^i,\kappa),y_B}$ </p>
+<p>$G_C^i$ : the clean graphs without replacing by trigger $\kappa$</p>
+<p>$\theta$ : the global model</p>
+<p>$L$ : loss function</p>
+<p>$\theta_B^i &#x3D; \arg\min_{\theta_B^i} L(G^i_B \cup G_C^i;\theta)$</p>
+<p><strong>Rand-GDBA</strong></p>
+<p>limitations : </p>
+<ol>
+<li><p>different attacker use different trigger $\kappa^i$</p>
+</li>
+<li><p>randomly sample a subset of nodes from data graph as trigger location and replace with trigger $\kappa^i$</p>
+</li>
+</ol>
+<p>representation : </p>
+<p>$G^i_B &#x3D; {R(G_j^i,\kappa^i),y_B}$</p>
+<p>$\theta_B^i &#x3D; \arg\min_{\theta_B^i} L(G^i_B \cup G_C^i;\theta)$</p>
+<h4 id="Thread-Model"><a href="#Thread-Model" class="headerlink" title="Thread Model"></a>Thread Model</h4><p><strong>Attackers</strong></p>
+<p>aim : effective and stealthy DBA to FedGL</p>
+<p>knowledge : training graphs and global model</p>
+<p>capability : inject small part of trigger in every training iteration</p>
+<p>objective : high backdoor accuracy and high main task accuracy</p>
+<p><strong>Defenders</strong></p>
+<p>aim : certified defense against the worst-case DBA</p>
+<p>objective : high main task accuracy and low certified backdoor accuracy</p>
+<h3 id="OPT-GDBA"><a href="#OPT-GDBA" class="headerlink" title="OPT-GDBA"></a>OPT-GDBA</h3><h4 id="Node-importance-score-learning"><a href="#Node-importance-score-learning" class="headerlink" title="Node importance score learning"></a>Node importance score learning</h4><p>goal : measure node importance so that could replace it with trigger</p>
+<p>input : nodes and edges features</p>
+<p>Networks : EdgeView and NodeView</p>
+<p>Networks representation : $e^i &#x3D; EdgeView(A^i)$ and $n^i&#x3D;NodeView(X^i)$, $e^i,n^i \in(0,1)$</p>
+<p>output : $s^i &#x3D; e^i \odot n^i$</p>
+<h4 id="Trigger-location-learning"><a href="#Trigger-location-learning" class="headerlink" title="Trigger location learning"></a>Trigger location learning</h4><p><strong>Definable-Trigger</strong></p>
+<p>method :  predefines trigger node size $n_{tri}$</p>
+<p>steps :</p>
+<ol>
+<li><p>descending order nodes by $s^i$</p>
+</li>
+<li><p>select top $n_{tri}$ nodes from $G$</p>
+</li>
+</ol>
+<p>weakness : same trigger size for graphs with different sizes </p>
+<p><strong>Customized-Trigger</strong></p>
+<p>input : Nodes’ scores $s^i$ and max trigger size $n_{tri}$</p>
+<p>output : important nodes set</p>
+<p>steps :</p>
+<ol>
+<li><p>use Gap statistics to estimate the number of cluster $\hat k$</p>
+</li>
+<li><p>use $\hat k$-means for $s^i$</p>
+</li>
+<li><p>choose the cluster which has max average node score</p>
+</li>
+<li><p>if the number of nodes of the cluster is bigger than $n_{tri}$，select only top $n_{tri}$, else the cluster is output, output as $\nu$</p>
+</li>
+</ol>
+<h4 id="Trigger-shape-learning"><a href="#Trigger-shape-learning" class="headerlink" title="Trigger shape learning"></a>Trigger shape learning</h4><p>Networks : EdgeAtt, NodeAtt, EdgeEmb, NodeEmb</p>
+<p><strong>EdgeAtt</strong></p>
+<p>input : $A_B^i$,$\nu_{def}^i$</p>
+<p>output : $E_{tri}^i \in R^{|\nu_{def}^i| \times |\nu_{def}^i|}$</p>
+<p><strong>NodeAtt</strong></p>
+<p>input : $X^i_B$,$\nu_{def}^i$</p>
+<p>output : $N_{tri}^i \in R^{|\nu_{def}^i| \times d}$</p>
+<p><strong>EdgeEmb&#x2F;NodeEmb</strong></p>
+<p>input : $i$</p>
+<p>output : $I_e \in R^{|\nu_{def}^i| \times |\nu_{def}^i|}$ or $I_n \in R^{|\nu_{def}^i| \times d}$</p>
+<p><strong>Multiple</strong></p>
+<p>input : $E_{tri}^i,N_{tri}^i,I_e,I_n$</p>
+<p>output : $E_{tri}^i &#x3D; E_{tri}^i \odot I_e$，$N_{tri}^i &#x3D; N_{tri}^i \odot I_n$</p>
+<p><strong>binary</strong></p>
+<p>$E_{tri}^i &#x3D; \mathbb{1}(E_{tri}^i\ge0.5)$</p>
+<p><strong>trigger</strong></p>
+<p>$\kappa^i &#x3D; (\nu_{def}^i,E_{tri}^i,N_{tri}^i)$</p>
+<h4 id="Training-with-Optimized-Backdoor"><a href="#Training-with-Optimized-Backdoor" class="headerlink" title="Training with Optimized Backdoor"></a>Training with Optimized Backdoor</h4><p><strong>Local model training</strong></p>
+<p>malicious client<br>$$<br>\theta_B^i &#x3D; \arg \min_{\theta_B^i} L(G_B^i\cup G_C^i;\theta)<br>$$<br>benign client<br>$$<br>\theta^j &#x3D; \arg \min_{\theta_B^i} L(G^j;\theta)<br>$$<br><strong>Optimizing the adaptive trigger generator</strong></p>
+<p>$\omega^i$ : the parameters of malicious client $i$<br>$$<br>\omega^i &#x3D; \arg \min_{\omega^i} L(G_B^i;\theta_B^i)<br>$$</p>
+<h3 id="Attack-Result"><a href="#Attack-Result" class="headerlink" title="Attack Result"></a>Attack Result</h3><h4 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h4><p><strong>dataset</strong></p>
+<p>6 benchmark real-world graph dataset for graph classification</p>
+<p><strong>method</strong></p>
+<p>compare Opt-GDBA with Rand-GCBA, Rand-GDBA</p>
+<p><strong>Fair Setting</strong></p>
+<p>make sure the edge in GDBA &amp; GCBA same</p>
+<p><strong>Parameters Setting</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameters name</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Client number</td>
+<td>40</td>
+</tr>
+<tr>
+<td>Client number for MUTAG</td>
+<td>20</td>
+</tr>
+<tr>
+<td>Dataset Distribution</td>
+<td>Average</td>
+</tr>
+<tr>
+<td>Iteration number</td>
+<td>200</td>
+</tr>
+<tr>
+<td>Iteration number for RDT-M5K</td>
+<td>400</td>
+</tr>
+<tr>
+<td>Training Client Rate</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>Rate of attacking client</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>Rate of malicious clients $\rho$</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Size of Trigger Nodes $n_{tri}$</td>
+<td>4</td>
+</tr>
+<tr>
+<td>threshold of trigger nodes $n_{tri}^*$</td>
+<td>5</td>
+</tr>
+</tbody></table>
+<p><strong>Evaluation</strong></p>
+<ol>
+<li>main task accuracy MA</li>
+<li>backdoor accuracy BA</li>
+<li>the average trigger node size $n_{tri}$</li>
+<li>the average trigger edge size $e_{tri}$</li>
+</ol>
+<h4 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h4><p><strong>observation</strong></p>
+<ol>
+<li>main task performance marginally sacrificed under all attack</li>
+<li>Rand-GDBA is greater than Rand-GCBA</li>
+<li>Opt-GDBA &gt;  Rand-DGBA not only effectiveness but also stealthiness</li>
+</ol>
+<p><strong>impact of $\rho$</strong></p>
+<p>BA slightly increases with a larger $\rho$, but MA is stable</p>
+<p><strong>impact of $n_{tri}$</strong></p>
+<p>BA and $n_{tri}$ is positive relation</p>
+<p><strong>impact of learning scheme</strong></p>
+<p>Customized-Trigger can further locate more important region</p>
+<p><strong>global trigger vs local trigger</strong></p>
+<p>global trigger get higher BA than local trigger</p>
+<p><strong>Ablation study</strong></p>
+<p>EdgeView and trigger-location make good performance, about 15%</p>
+<p>trigger-shape make good performance too, about 25%</p>
+<p>all of them give about 36%</p>
+<h3 id="Certified-Defense-for-FedGL"><a href="#Certified-Defense-for-FedGL" class="headerlink" title="Certified Defense for FedGL"></a>Certified Defense for FedGL</h3><h4 id="Graph-division-into-Subgraphs"><a href="#Graph-division-into-Subgraphs" class="headerlink" title="Graph division into Subgraphs"></a>Graph division into Subgraphs</h4><p><strong>Node Division</strong></p>
+<p>$v \in V$ : node in the nodes set</p>
+<p>$str(\cdot)$ : stringify</p>
+<p>$h[\cdot]$ : hash function</p>
+<p>$T$ : the number of subgraphs</p>
+<p>$V^t$ : the nodes set with group index $t$, that is $V^t &#x3D; {u\in V|h[str(v)]\ mod\ (T+1)}$</p>
+<p>$X^t \in R^{|V|\times d}$ : node features in $t$-th group</p>
+<p>Node Division Steps : </p>
+<ol>
+<li>for every $v \in V$, $str(v)$</li>
+<li>group $str(v)$ by using $h[str(v)]\ mod\ (T+1)$</li>
+<li>$X_v^t&#x3D;X_v$ if $v \in V^t$ else $X_v^t&#x3D;0$</li>
+</ol>
+<p><strong>Edge Division</strong></p>
+<p>$(u,v) \in \varepsilon$ : undirected edge in the edges set</p>
+<p>make sure : $h[str(u) + str(v)] &#x3D; h[str(v)+str(u)]$</p>
+<p>Edge Division Steps:$\varepsilon^t &#x3D; {(u,v)|h[str(u)+str(v)]\ mod (T+1) &#x3D;t}$</p>
+<h4 id="Majority-Vote-based-Ensemble-Classifier"><a href="#Majority-Vote-based-Ensemble-Classifier" class="headerlink" title="Majority Vote-based Ensemble Classifier"></a>Majority Vote-based Ensemble Classifier</h4><p>$$<br>T_l &#x3D; \sum_{t&#x3D;1}^T \mathbb{1}(f_B(G^t)&#x3D;l) \<br>g_B(B) &#x3D; \arg \max_{l\in y} T_l<br>$$</p>
+<h4 id="Certified-Robustness-Guarantees"><a href="#Certified-Robustness-Guarantees" class="headerlink" title="Certified Robustness Guarantees"></a>Certified Robustness Guarantees</h4><p>…</p>
+<h3 id="Certified-Defense-Result"><a href="#Certified-Defense-Result" class="headerlink" title="Certified Defense Result"></a>Certified Defense Result</h3><h4 id="Settings-1"><a href="#Settings-1" class="headerlink" title="Settings"></a>Settings</h4><p><strong>parameters setting</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter Name</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\rho$</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>$n_{tri}$</td>
+<td>4</td>
+</tr>
+<tr>
+<td>$n_{tri}^*$</td>
+<td>5</td>
+</tr>
+<tr>
+<td>T</td>
+<td>30</td>
+</tr>
+</tbody></table>
+<p><strong>Evaluation Metrics</strong></p>
+<p>Certified MA at perturbation size m</p>
+<p>Certified BA</p>
+<h4 id="Result-1"><a href="#Result-1" class="headerlink" title="Result"></a>Result</h4><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>给定替换节点和替换子图，怎么进行替换操作</li>
+<li>这种分组方法能确保node和其对应的edge在一起？</li>
+<li>怎么确保$h[str(u) + str(v)] &#x3D; h[str(v)+str(u)]$，构造hash函数？</li>
+<li>T不断增大，不会损坏图本身的特征吗</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4clyfjh0001fgw5e9pshg42" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/06/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
