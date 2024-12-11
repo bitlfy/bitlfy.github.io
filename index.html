@@ -69,6 +69,73 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Certified-Robustness-via-Randomized-Smoothing" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" class="article-date">
+  <time class="dt-published" datetime="2024-12-11T03:43:55.000Z" itemprop="datePublished">2024-12-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/">Certified Robustness via Randomized Smoothing</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="可证对抗鲁棒性"><a href="#可证对抗鲁棒性" class="headerlink" title="可证对抗鲁棒性"></a>可证对抗鲁棒性</h2><p>本文与其他<strong>以Idea+实验+可解释性为主的</strong>论文不同，其以<strong>公式推导和数学证明</strong>为核心。因此，此笔记不使用往常顺延论文逻辑脉络的写法，意在整理整个推到过程。同时，略去一些引论的证明，只给出最终结论，目的在于突出重点，使论文证明清晰。</p>
+<h3 id="第一部分-：-严密可证对抗鲁棒性"><a href="#第一部分-：-严密可证对抗鲁棒性" class="headerlink" title="第一部分 ： 严密可证对抗鲁棒性"></a>第一部分 ： 严密可证对抗鲁棒性</h3><p>该部分分为两个定理.</p>
+<p>定理一证明的是，在扰动小于某个特定半径R的情况下，分类器一定具有鲁棒性。</p>
+<p>定理二证明的是，在扰动半径大于该特定半径R的情况下，一定能找到一个特定的f，使平滑后的g不具有鲁棒性。即从函数的角度证明了其严密性。</p>
+<p>最终得到的扰动边界为<br>$$<br>\begin{flalign}<br>&amp;R &#x3D; \frac \sigma 2 [\Phi^{-1}(\underline {p_A})-\Phi^{-1}(\overline{p_B})]&amp;\<br>&amp;\forall |\delta|&lt;R,g(x+\delta)&#x3D;c_A\<br>&amp;\forall |\delta|&gt;R,\exist f,g : g(x+\delta)\ne c_A<br>\end{flalign}<br>$$<br><img src="Certified-Robustness-via-Randomized-Smoothing/定理1-1.jpg" style="zoom: 100%;" /></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%AE%9A%E7%90%861-2.jpg"></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%AE%9A%E7%90%861-3.jpg"></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%AE%9A%E7%90%862.jpg"></p>
+<h3 id="第二部分-：-在线性二分类分类器上证明对抗鲁棒性及扩展"><a href="#第二部分-：-在线性二分类分类器上证明对抗鲁棒性及扩展" class="headerlink" title="第二部分 ： 在线性二分类分类器上证明对抗鲁棒性及扩展"></a>第二部分 ： 在线性二分类分类器上证明对抗鲁棒性及扩展</h3><p>第二部分通过四个命题，陈述了可证对抗鲁棒性在线性二分类分类器上的情况。并对无穷半径的情况进行说明。</p>
+<p>命题一证明 ：对于线性二分类分类器，其随机平滑的结果与原函数一致。</p>
+<p>命题二证明 ：对于线性二分类分类器，其扰动半径等于样本点到决策边界的距离，符合实际，佐证了定理一</p>
+<p>命题三证明 ：线性二分类分类器对于大于扰动半径的扰动，其不再具有鲁棒性。与定理二不同，命题三从“距离”的角度，证明了可证扰动半径的紧密性。</p>
+<p>命题四证明 ：存在函数和输入x，使可证扰动半径达到无穷。</p>
+<p><strong>命题一</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%981.jpg"></p>
+<p><strong>命题二</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%982.jpg"></p>
+<p><strong>命题三</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%983.jpg"></p>
+<p><strong>命题四</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%984.jpg"></p>
+<h3 id="第三部分-：-可证扰动半径在高分辨率图像的可拓展性"><a href="#第三部分-：-可证扰动半径在高分辨率图像的可拓展性" class="headerlink" title="第三部分 ： 可证扰动半径在高分辨率图像的可拓展性"></a>第三部分 ： 可证扰动半径在高分辨率图像的可拓展性</h3><p>由于可证扰动半径与维度无关，作者额外证明了，在同一张图像高分辨率和低分辨率的情况下，高分辨率具有更高的扰动半径。</p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%985.jpg"></p>
+<h3 id="第四部分-：-针对可证扰动半径提出实用算法"><a href="#第四部分-：-针对可证扰动半径提出实用算法" class="headerlink" title="第四部分 ： 针对可证扰动半径提出实用算法"></a>第四部分 ： 针对可证扰动半径提出实用算法</h3><p>该部分首先提出了实用算法，对于实用算法的“实用性”，命题6和命题7进行了证明。</p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%AE%9E%E7%94%A8%E7%AE%97%E6%B3%95.jpg"></p>
+<p><strong>命题6</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%986.jpg"></p>
+<p><strong>命题7</strong></p>
+<p><img src="/Certified-Robustness-via-Randomized-Smoothing/%E5%91%BD%E9%A2%987.jpg"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4jcnfkj0000qgw5fbo1e4aj" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-GNN-Notes-LEC-04" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/06/GNN-Notes-LEC-04/" class="article-date">
@@ -151,7 +218,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4coqb0600029ow57yfj86wn" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4jcnfkt0004qgw53k2g3cqa" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -283,7 +350,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4coqb0700039ow54i53ho29" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4jcnfks0003qgw56q5yalms" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -404,7 +471,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4coqb0500019ow5br69g2ty" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4jcnfkp0002qgw5c9mjgthw" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -509,7 +576,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4coqb0100009ow53sdi53sn" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4jcnfkn0001qgw55ptrdvcm" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -864,7 +931,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4coqb0700049ow5hm9o291v" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4jcnfkw0006qgw5apqwd6ox" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -915,7 +982,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4coqb0800059ow5936ecdz9" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4jcnfkv0005qgw5beky1qha" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -958,6 +1025,10 @@
       <ul>
         
           <li>
+            <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/">Certified Robustness via Randomized Smoothing</a>
+          </li>
+        
+          <li>
             <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
           </li>
         
@@ -971,10 +1042,6 @@
         
           <li>
             <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
           </li>
         
       </ul>
