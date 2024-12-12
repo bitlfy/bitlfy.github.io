@@ -69,6 +69,152 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Certified-Robustness-inspired-Attack-Framework" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" class="article-date">
+  <time class="dt-published" datetime="2024-12-12T12:19:03.000Z" itemprop="datePublished">2024-12-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/">Certified Robustness inspired Attack Framework</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Turning-Strengths-into-Weaknesses-A-Certified-Robustness-Inspired-Attack-Framework-against-Graph-Neural-Networks"><a href="#Turning-Strengths-into-Weaknesses-A-Certified-Robustness-Inspired-Attack-Framework-against-Graph-Neural-Networks" class="headerlink" title="Turning Strengths into Weaknesses: A Certified Robustness Inspired Attack Framework against Graph Neural Networks"></a>Turning Strengths into Weaknesses: A Certified Robustness Inspired Attack Framework against Graph Neural Networks</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><ul>
+<li>GNN have achieved state-of-the-art performance in many graph tasks</li>
+<li>However, GNNs are vulnerable to test-time evasion and training-time poisoning attacks</li>
+<li>Certified robustness is used to defend adversarial attacks, but authors use its properties to attack</li>
+<li>For a node with larger certified robustness, it is more robust to graph perturbations. So nodes with smaller certified robustness are more easy to attack.</li>
+<li>Contribution : Design a certified robustness inspired attack loss, and produces its counterpart.</li>
+</ul>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p><strong>Background</strong></p>
+<ol>
+<li><p>The development of GNNs : many methods on GNNs have achieved state-of-the-art</p>
+</li>
+<li><p>Attacks : GNNs are vulnerable to test-time graph evasion attacks and training-time graph poisoning attacks</p>
+<ul>
+<li>Graph Evasion : Given a learned GNNs model and a clean graph, attacker perturbs the graph structure to make model make mistakes</li>
+<li>Graph Poison : Given a GNN algorithm and a graph, attacker perturbs the graph structure in the training phase so that the model make mistakes in test-time</li>
+</ul>
+</li>
+</ol>
+<p><strong>Contribution &#x2F; FrameWork</strong></p>
+<ol>
+<li><p>generalize randomized smoothing and derive the node’s certified perturbation size, which inspire us to focus more on disrupting nodes with smaller certified perturbation size</p>
+</li>
+<li><p>Design a certified robustness inspired attack loss : modify the weights for different nodes, which means nodes with smaller certified robustness would be assigned larger weight while the larger nodes would be assigned smaller weight. So that more perturbation budget would be allocated to these large weighted nodes.</p>
+</li>
+<li><p>Design certified robustness attack inspired attack framework that only modify the existing attack loss with certified perturbation size defined node weights. So that any attack existing evasion and poison method could regarded as the base attack of the framework</p>
+</li>
+</ol>
+<h3 id="Background-and-Preliminaries"><a href="#Background-and-Preliminaries" class="headerlink" title="Background and Preliminaries"></a>Background and Preliminaries</h3><p><strong>GNN : node classification</strong></p>
+<p>$\mathcal V$ : nodes set</p>
+<p>$u \in \mathcal V$ : node in nodes set</p>
+<p>$\varepsilon$ : edges set</p>
+<p>$(u,v) \in \varepsilon$ : edge in edges set</p>
+<p>$G &#x3D; (\mathcal V,\varepsilon)$ : graph</p>
+<p>$A \in {0,1}^{|\mathcal V|\times|\mathcal V|}$ : adjacency matrix</p>
+<p>$\mathcal Y$ : nodes’ labels set</p>
+<p>$y_u \in \mathcal Y$ : the label of node u</p>
+<p>$\mathcal V_{Tr},\mathcal V_{Te}$ : the train &#x2F; test nodes set</p>
+<p>$\mathcal A$ : the algorithm of GNN</p>
+<p>$f_\theta &#x3D; \mathcal A(A,\mathcal V_{Tr}) : G(A)\rightarrow \mathcal Y^{|\mathcal V|}$ : the node classifier with its parameters $\theta$, training with graph and training nodes</p>
+<p>Loss function : $\min_\theta \mathcal L(f_\theta,A,\mathcal V_{Tr}) &#x3D; \sum_{u\in \mathcal V_{Tr}} l(f_\theta,A,y_u)$</p>
+<p><strong>Adversarial Attacks to GNNs</strong></p>
+<p>$\delta \in {0,1}^{|\mathcal V|\times|\mathcal V|}$ : perturbations, the element $\delta_{s,t}$ means change the status of edge $(s,t)$</p>
+<p>$A \oplus \delta$ : adjacency matrix of graph make XOR with perturbations</p>
+<p>$\Delta \ge |\delta|$ : perturbations budget</p>
+<ol>
+<li><p>evasion attack</p>
+<p>The attacker aims to maximize the loss follows :<br>$$<br>\max_{\delta} \sum_{v \in \mathcal V_{Te}} \mathbf 1[f_\theta(A\oplus\delta;v)\ne y_v],s.t. |\delta|\le \Delta<br>$$<br>Due to the problem above is challenging to solve, optimize the loss below :<br>$$<br>\max_\delta \sum_{v\in \mathcal V_{Te}} l(f_\theta(A\oplus\delta;v)\ne y_v),s.t. |\delta|\le \Delta<br>$$</p>
+</li>
+<li><p>poison attack</p>
+<p>The attacker aims to solve the bilevel optimization problem :<br>$$<br>\max_{\delta} \sum_{v \in \mathcal V_{Te}} \mathbf 1[f_\theta(A\oplus\delta;v)\ne y_v]\<br>s.t. \theta &#x3D; \arg \min_\theta \sum_{u \in \mathcal V_{Tr}}\mathbf 1[f_\theta(A\oplus\delta;u)\ne y_u],|\delta|\le \Delta<br>$$<br>In practice, the label of test set is unavailable during training. As a result, the optimization problem above can’t solve and it is hard to solve in fact. Consequently, we optimize the problem below instead.<br>$$<br>\max_{\delta} \sum_{v \in \mathcal V_{Tr}}  l[f_\theta(A\oplus\delta;v)\ne y_v]\<br>s.t. \theta &#x3D; \arg \min_\theta \sum_{u \in \mathcal V_{Tr}} l[f_\theta(A\oplus\delta;u)\ne y_u],|\delta|\le \Delta<br>$$</p>
+</li>
+</ol>
+<p><strong>Certified Robustness to Graph Evasion Attacks</strong></p>
+<p>The random smoothing that defends against graph evasion attacks to GNNs consists of the three parts : </p>
+<ol>
+<li><p>construct smoothed node classifier</p>
+<p>Given base classifier $f$, graph $G$, and test node $u$ with its label $y_u$. Then randomized smoothing node classifier g as follow :<br>$$<br>g(A;u) &#x3D; \arg \max_{c\in \mathcal Y}Pr(f(A\oplus \varepsilon;u)&#x3D;c)\<br>Pr(\varepsilon_{s,t}&#x3D;0) &#x3D; \beta,Pr(\varepsilon_{s,t}&#x3D;1) &#x3D; 1-\beta,<br>$$</p>
+</li>
+<li><p>Deriving the certified robustness of graph evasion attacks of GNNs</p>
+<p>$g(A;u)&#x3D;y_u$ means $g$ predicts correctly the label of u. Then $g$ provably predicts the correct label for $u$ if $\delta$ is bounded.<br>$$<br>g(A\oplus \delta;u)&#x3D;y_u,\forall \delta|\delta|<em>0\le K(\underline{p</em>{y_u}})<br>$$<br>$\underline{p_{y_u}}$is the lower bound of the probability that f predict the correct label of u on the noisy $\varepsilon$ </p>
+<p>$K(\underline{p_{y_u}})$ is the certified robustness of the node u.</p>
+</li>
+<li><p>Computing the certified perturbation size in practice</p>
+<p>1)sample perturbations $\varepsilon^1,\varepsilon^2,…,\varepsilon^{n}$ from the distribution $Pr(\varepsilon_{s,t}&#x3D;0) &#x3D; \beta,Pr(\varepsilon_{s,t}&#x3D;1) &#x3D; 1-\beta$</p>
+<p>2)add perturbations to $A$ and get $A\oplus \varepsilon^1,A\oplus \varepsilon^2,…,A\oplus \varepsilon^n$</p>
+<p>3)use f to predict $u$’s label and counts the numbers of each label by $N_c &#x3D; \sum_{j&#x3D;1}^N \mathbb I(f(A\oplus \varepsilon,u)&#x3D;c),c\in \mathcal Y$</p>
+<p>4)compute $\underline{p_{y_u}} &#x3D; B(\alpha,N_{y_u},N-N_{y_u}-1)$, where $1-\alpha$ is confidence level and $B(\alpha,a,b)$ is the $\alpha$-th quantile of Beta distribution with shape parameters a and b.</p>
+</li>
+</ol>
+<h3 id="Certified-Robustness-to-Graph-Poisoning-Attacks-via-randomized-smoothing"><a href="#Certified-Robustness-to-Graph-Poisoning-Attacks-via-randomized-smoothing" class="headerlink" title="Certified Robustness to Graph Poisoning Attacks via randomized smoothing"></a>Certified Robustness to Graph Poisoning Attacks via randomized smoothing</h3><p><strong>Main Idea</strong></p>
+<p>extend randomized smoothing from the classifier to a general function</p>
+<p><strong>Building base function</strong></p>
+<p>Define $\widetilde f(A,\mathcal V_{Tr};v)$ as the composition of 1) training the model with graph $G(A)$, algorithm $\mathcal A$ and training nodes set $\mathcal V_{Tr}$ ; 2) test the model with node $v$</p>
+<p>View $\widetilde f$ as the base function.</p>
+<p><strong>Construct a smoothed function</strong></p>
+<p>Define the randomized smoothed function as follow :<br>$$<br>\widetilde g(A,\mathcal V_{Tr};v) &#x3D; \arg \max_{c\in \mathcal Y} Pr(\widetilde f(A\oplus \epsilon,\mathcal V_{Tr};v)&#x3D;c)<br>$$<br>where</p>
+<p>$\epsilon \in {0,1}^{|\mathcal V|\times |\mathcal V|}$ : noise matrix whose element $\epsilon_{s,t}$ drawn from discrete distribution</p>
+<p><strong>Deriving the certified robustness of graph poisoning attacks of GNNs</strong><br>$$<br>\widetilde g(A\oplus \delta,\mathcal V_{Tr};v)&#x3D;y_v,\forall |\delta|<em>0\le K(p</em>{y_v})<br>$$<br><strong>computing the certified perturbation size in practice</strong></p>
+<p>Given : algorithm $\mathcal A$, graph $G(A)$, training nodes $\mathcal V_{Tr}$, and discrete distribution $Pr(\varepsilon_{s,t}&#x3D;0) &#x3D; \beta,Pr(\varepsilon_{s,t}&#x3D;1) &#x3D; 1-\beta$, and a test node $v$</p>
+<p>Steps : </p>
+<ol>
+<li>sample $N$ random noise matrices $\epsilon^1,…,\epsilon^N$ from the discrete distribution given</li>
+<li>add noise matrix to adjacency matrix and get $A\oplus\epsilon^1,…,A\oplus \epsilon^N$</li>
+<li>train the classifiers  $\widetilde f^1 &#x3D; \mathcal A(A\oplus\epsilon^1,\mathcal V_{Tr},…,\widetilde f^N &#x3D; \mathcal A(A\oplus\epsilon^N,\mathcal V_{Tr})$ </li>
+<li>use the classifiers predict v’s labels and count the number of all kinds of labels, $N_c &#x3D; \sum_{j&#x3D;1}^N\mathbb I(\widetilde f^j(A\oplus\epsilon^j,\mathcal V_{Tr};v)&#x3D;c),c\in \mathcal Y$ </li>
+<li>estimate $\underline{p_{y_v}}$ by $\underline{p_{y_v}} &#x3D; B(\alpha,N_{y_v},N-N_{y_v}-1)$ and calculate the perturbation size</li>
+</ol>
+<h3 id="Certified-Robustness-Inspired-Attack-Framework-against-GNNs"><a href="#Certified-Robustness-Inspired-Attack-Framework-against-GNNs" class="headerlink" title="Certified Robustness Inspired Attack Framework against GNNs"></a>Certified Robustness Inspired Attack Framework against GNNs</h3><h4 id="Observation"><a href="#Observation" class="headerlink" title="Observation"></a>Observation</h4><p><strong>Observation</strong></p>
+<p>A node with a larger(smaller) certified perturbation size should be disrupted with a smaller(larger) number of perturbation edges.</p>
+<p><strong>Idea</strong></p>
+<p>With a perturbation budget, an attacker should avoid disrupting nodes with larger certified perturbation sizes, but focus on the nodes with smaller perturbation size.</p>
+<p><strong>Questions and Measures</strong></p>
+<ol>
+<li>How to get the perturbation sizes ? : derived node’s certified perturbation size</li>
+<li>How to allocate the budget for the nodes ? :  a certified perturbation inspired loss</li>
+<li>How to generate the perturbation ? : certified robustness inspired attack framework</li>
+</ol>
+<h4 id="Certified-Robustness-Inspired-Loss-Design"><a href="#Certified-Robustness-Inspired-Loss-Design" class="headerlink" title="Certified Robustness Inspired Loss Design"></a>Certified Robustness Inspired Loss Design</h4><p><strong>Naive solution and its weakness</strong></p>
+<p>Solution : sorts all nodes’ certified robustness sizes in an ascending order and perturbs them one-by-one until reaching the budget.</p>
+<p>Weakness : computationally intensive and suboptimal </p>
+<p><strong>Idea</strong></p>
+<p>The loss functions in the poison and evasion are defined for each nodes. So that, assign each node with a weight which associated with its certified perturbation. The loss function as follow :<br>$$<br>L_{CR}(f_\theta,A,\mathcal V_T) &#x3D; \sum_{u \in V_T} w(u)\cdot \mathcal l(f_\theta(A;u),y_u)\<br>w(u) &#x3D; \frac{1}{1+\exp(a\cdot K(\underline{p_{y_u}}))}<br>$$<br>where $a$ is super parameter</p>
+<h4 id="Certified-Robustness-Inspired-Attack-Design"><a href="#Certified-Robustness-Inspired-Attack-Design" class="headerlink" title="Certified Robustness Inspired Attack Design"></a>Certified Robustness Inspired Attack Design</h4><p><strong>certified robustness inspired evasion attacks to generate graph perturbations</strong></p>
+<p>For any base attack, only modify the loss by multiplying it with certification perturbation sizes defined node weights.</p>
+<p>For instance, use PGD attack. The perturbation should iteratively generates by<br>$$<br>\delta &#x3D; Proj_{\mathbb B}(\delta+\eta \cdot \nabla_\delta \mathcal L_{CR}(f_\theta,A\oplus \delta, \mathcal V_{Te})\<br>\mathbb B&#x3D;{\delta:1^T\cdot \delta\le \Delta,\delta\in[0,1]^{|\mathcal V|\times\mathcal V|}}\<br>Proj_{\mathbb B}(a) &#x3D; \left{ \begin{array}{rcl}<br>\Pi_{[0,1]}(a-\mu1),1^T\Pi_{[0,1]}(a-\mu1)&#x3D;\Delta\<br>\Pi_{[0,1]}(a),1^T\Pi_{[0,1]}(a-\mu1)\le\Delta<br>\end{array}\right.<br>$$<br><strong>certified robustness inspired graph poisoning attacks to generate graph perturbations</strong><br>$$<br>\max_\delta \mathcal L_{CR}(f_\theta*,A\oplus\delta,\mathcal V_{Tr})\<br>s.t. \theta^* &#x3D; \arg\min_{\theta} \mathcal L_{CR}(f_\theta,A\oplus\delta,\mathcal V_{Tr}),|\delta|\le \Delta<br>$$<br>问题：</p>
+<ol>
+<li>将随机平滑从分类器扩展到一般函数，似乎不是很明显？</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" data-id="cm4lallnb0000p8w5bsa1des5" data-title="Certified Robustness inspired Attack Framework" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Certified-Robustness-via-Randomized-Smoothing" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" class="article-date">
@@ -124,7 +270,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4jd802d000228w52c3d2ksp" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4lallnj0001p8w5bdv1e8hk" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -218,7 +364,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4jd802f000428w555h6eyx2" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4lallnp0005p8w560fj9y5g" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -350,7 +496,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4jd802e000328w59uvug85r" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4lallno0004p8w51o52g4h6" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -471,7 +617,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4jd802b000128w58elpd8ga" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4lallnl0002p8w54yg9an8i" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -576,7 +722,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4jd8028000028w5arkq7mw8" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4lallnn0003p8w578mm6k3r" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -931,7 +1077,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4jd802g000628w5g34pbak4" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4lallnr0007p8w5h9saeeoo" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -982,7 +1128,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4jd802f000528w52lohg8m6" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4lallnq0006p8w5434t549m" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1025,6 +1171,10 @@
       <ul>
         
           <li>
+            <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/">Certified Robustness inspired Attack Framework</a>
+          </li>
+        
+          <li>
             <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/">Certified Robustness via Randomized Smoothing</a>
           </li>
         
@@ -1038,10 +1188,6 @@
         
           <li>
             <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
           </li>
         
       </ul>
