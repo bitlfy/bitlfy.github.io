@@ -69,6 +69,146 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GNN-Notes-LEC-05" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/15/GNN-Notes-LEC-05/" class="article-date">
+  <time class="dt-published" datetime="2024-12-15T09:56:42.000Z" itemprop="datePublished">2024-12-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-05-Collective-Classification"><a href="#Lec-05-Collective-Classification" class="headerlink" title="Lec 05 Collective Classification"></a>Lec 05 Collective Classification</h2><h3 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a>1. Overview</h3><p>Question : Given a graph with labels on some nodes, how do we assign labels to all other nodes in the network ?</p>
+<p>Intuition : Similar nodes are connected</p>
+<p>Technologies : Relational classification, Iterative Classification, Belief Propagation</p>
+<p> Explain of “Similar nodes are connected” from the view of social science:</p>
+<ul>
+<li><p>Homophily : the tendency of individuals to associate and bond with similar others</p>
+</li>
+<li><p>Influence : social connection can influence the individual characteristics of a person</p>
+</li>
+</ul>
+<h3 id="2-Motivations-of-classification"><a href="#2-Motivations-of-classification" class="headerlink" title="2. Motivations of classification"></a>2. Motivations of classification</h3><ul>
+<li><p>similar nodes are typically close together or directly connected in the network</p>
+</li>
+<li><p>classification label of node $v$ may depend on 1) features of $v$; 2) labels of the nodes in $v$’s neighborhood; 3) features of the nodes in $v$’s neighborhood</p>
+</li>
+</ul>
+<h3 id="3-Problem-definition"><a href="#3-Problem-definition" class="headerlink" title="3. Problem definition"></a>3. Problem definition</h3><p>Given :</p>
+<p>adjacency matrix $A$ over $n$ nodes</p>
+<p>some nodes with labels $Y_i$ and some unlabeled nodes</p>
+<p>the features of nodes $F$</p>
+<p>Goal :</p>
+<p>Predict the labels of unlabeled nodes, or find $P(Y_v)$ given features and network</p>
+<h3 id="4-Pipeline-of-Collective-Classification"><a href="#4-Pipeline-of-Collective-Classification" class="headerlink" title="4. Pipeline of Collective Classification"></a>4. Pipeline of Collective Classification</h3><p>Hypothesis : Markov Assumption</p>
+<p>Pipeline : </p>
+<ul>
+<li>Local classifier : used for initial label assignment<ul>
+<li>Predict the nodes label used only their features, but not network information</li>
+</ul>
+</li>
+<li>Relational Classifier : capture correlation<ul>
+<li>label one node based on the labels or features of its neighbors</li>
+</ul>
+</li>
+<li>Collective Inference<ul>
+<li>apply the relational classifier to each node iteratively until the inconsistency between neighboring labels is minimized</li>
+<li>be affected by network structure</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-Relational-Classification"><a href="#5-Relational-Classification" class="headerlink" title="5. Relational Classification"></a>5. Relational Classification</h3><p>Base Idea : class probability of $Y_v$ of node $v$ is a weighted average of class probabilities of its neighbors</p>
+<p>Steps : </p>
+<ul>
+<li><p>Initial : initial labeled node $v$ with its ground-truth label $Y_v^*$ while initial unlabeled nodes $Y_v &#x3D; 0.5$</p>
+</li>
+<li><p>Update all nodes’ labels with formula follow until convergence:<br>$$<br>P(Y_v &#x3D; c) &#x3D; \frac 1 {\sum_{(v,u)\in E}A_{u,v}}\sum_{(v,u)\in E}A_{v,u} P(Y_u&#x3D;c)<br>$$<br>where $A$ is adjacency matrix with weight or strength information</p>
+</li>
+</ul>
+<p>Challenges :</p>
+<p>Convergence is not guaranteed</p>
+<p>model can’t use node feature information</p>
+<h3 id="6-Iterative-Classification"><a href="#6-Iterative-Classification" class="headerlink" title="6. Iterative Classification"></a>6. Iterative Classification</h3><p><strong>Main Idea</strong> : classify node $v$ with its attributions $f_v$ and the summary of labels $z_v$ of neighbors set $N_v$ </p>
+<p><strong>Approach</strong> : </p>
+<ul>
+<li><p>$\phi_1(f_v)$ : predict the label of node $v$ base of $f_v$</p>
+</li>
+<li><p>$\phi_2(f_v,z_v)$ : predict the label base of $f_v$ and $z_v$</p>
+</li>
+<li><p>the approaches of $z_v$</p>
+<ul>
+<li>histogram of the number of each label in $N_v$</li>
+<li>most common label in $N_v$</li>
+<li>number of different labels in $N_v$</li>
+</ul>
+</li>
+</ul>
+<p><strong>Steps</strong> :</p>
+<ul>
+<li>classify based on node attributions alone<ul>
+<li>train classifier $\phi_1,\phi_2$ with training set</li>
+</ul>
+</li>
+<li>Iterate till convergence<ul>
+<li>Initial : initial the labels with $\phi_1$</li>
+<li>Iterate : update $z_v$ based on $Y_u,\forall u \in N_v$ and then update $Y_v$ based on $f_v$ and $z_v$</li>
+</ul>
+</li>
+</ul>
+<p><strong>Challenges</strong> :</p>
+<p>Convergence is not guaranteed</p>
+<h3 id="7-Loopy-belief-propagation"><a href="#7-Loopy-belief-propagation" class="headerlink" title="7. Loopy belief propagation"></a>7. Loopy belief propagation</h3><p><strong>Notation</strong></p>
+<ul>
+<li>Label-label potential matrix $\psi$ : $\psi(Y_i,Y_j)$ is proportional to the probability of a node $j$ being in class $Y_j$ given that it has neighbor $i$ in $Y_i$</li>
+<li>Prior belief $\phi$ : $\phi(Y_i)$ is proportional to the probability of node $i$ being in class $Y_i$</li>
+<li>$m_{i\rightarrow j}(Y_j)$ : $i$’s message of $j$ being in $Y_j$</li>
+<li>$\mathcal L$ : set of all classes &#x2F; labels</li>
+</ul>
+<p><strong>Steps</strong></p>
+<ul>
+<li><p>Initial all messages to 1</p>
+</li>
+<li><p>repeat for each node by formula<br>$$<br>m_{i\rightarrow j}(Y_j) &#x3D; \sum_{Y_i\in \mathcal L} \psi(Y_i,Y_j) \phi(Y_i) \Pi_{k\in N_i&#x2F;j} m_{k\rightarrow i}(Y_i),\forall Y_j \in \mathcal L<br>$$</p>
+</li>
+</ul>
+<p><strong>Result</strong><br>$$<br>b_i(Y_i) &#x3D; \phi_i(Y_i)\Pi_{j \in N_i}m_{j\rightarrow i}(Y_i),\forall Y_i \in \mathcal L<br>$$<br><strong>Advantages</strong></p>
+<ul>
+<li>easy to program and parallelize</li>
+<li>can apply to any graph model with any form of potentials</li>
+</ul>
+<p><strong>Challenges</strong></p>
+<ul>
+<li>convergence is not guaranteed, especially if many closed loops</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/15/GNN-Notes-LEC-05/" data-id="cm4pfn6yh0006u0w54nvzecnl" data-title="GNN-Notes-LEC-05" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Certified-Robustness-inspired-Attack-Framework" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" class="article-date">
@@ -203,7 +343,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" data-id="cm4mqozl40000vkw5bb8v0wap" data-title="Certified Robustness inspired Attack Framework" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" data-id="cm4pfn6yb0000u0w50jza9xco" data-title="Certified Robustness inspired Attack Framework" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -270,7 +410,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4mqozl80001vkw5buvs1248" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4pfn6ye0001u0w541ptd34j" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -364,7 +504,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4mqozl90002vkw505mq7dt3" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4pfn6yh0005u0w5c7e95cn5" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -496,7 +636,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4mqozlc0007vkw5h0t6gy9b" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4pfn6yg0004u0w5fdmed8so" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -617,7 +757,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4mqozlb0005vkw564qve1jj" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4pfn6yg0003u0w5d8o71ojj" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -722,7 +862,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4mqozlc0006vkw5etrp1v3n" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4pfn6yf0002u0w55cxj3w7m" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1077,7 +1217,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4mqozlb0004vkw52aow8e85" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4pfn6yi0008u0w5gvbr8guo" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1128,7 +1268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4mqozla0003vkw5d8iyaeks" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4pfn6yi0007u0w5etbp8u3w" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1171,6 +1311,10 @@
       <ul>
         
           <li>
+            <a href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
+          </li>
+        
+          <li>
             <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/">Certified Robustness inspired Attack Framework</a>
           </li>
         
@@ -1184,10 +1328,6 @@
         
           <li>
             <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/06/GNN-Notes-LEC-02/">GNN Notes : LEC 02</a>
           </li>
         
       </ul>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN-Notes-LEC-05 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 05 Collective Classification1. OverviewQuestion : Given a graph with labels on some nodes, how do we assign labels to all other nodes in the network ? Intuition : Similar nodes are connected Techn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN-Notes-LEC-05">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/15/GNN-Notes-LEC-05/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 05 Collective Classification1. OverviewQuestion : Given a graph with labels on some nodes, how do we assign labels to all other nodes in the network ? Intuition : Similar nodes are connected Techn">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-15T09:56:42.000Z">
+<meta property="article:modified_time" content="2024-12-15T09:56:48.658Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-05" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/15/GNN-Notes-LEC-05/" class="article-date">
+  <time class="dt-published" datetime="2024-12-15T09:56:42.000Z" itemprop="datePublished">2024-12-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN-Notes-LEC-05
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-05-Collective-Classification"><a href="#Lec-05-Collective-Classification" class="headerlink" title="Lec 05 Collective Classification"></a>Lec 05 Collective Classification</h2><h3 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a>1. Overview</h3><p>Question : Given a graph with labels on some nodes, how do we assign labels to all other nodes in the network ?</p>
+<p>Intuition : Similar nodes are connected</p>
+<p>Technologies : Relational classification, Iterative Classification, Belief Propagation</p>
+<p> Explain of “Similar nodes are connected” from the view of social science:</p>
+<ul>
+<li><p>Homophily : the tendency of individuals to associate and bond with similar others</p>
+</li>
+<li><p>Influence : social connection can influence the individual characteristics of a person</p>
+</li>
+</ul>
+<h3 id="2-Motivations-of-classification"><a href="#2-Motivations-of-classification" class="headerlink" title="2. Motivations of classification"></a>2. Motivations of classification</h3><ul>
+<li><p>similar nodes are typically close together or directly connected in the network</p>
+</li>
+<li><p>classification label of node $v$ may depend on 1) features of $v$; 2) labels of the nodes in $v$’s neighborhood; 3) features of the nodes in $v$’s neighborhood</p>
+</li>
+</ul>
+<h3 id="3-Problem-definition"><a href="#3-Problem-definition" class="headerlink" title="3. Problem definition"></a>3. Problem definition</h3><p>Given :</p>
+<p>adjacency matrix $A$ over $n$ nodes</p>
+<p>some nodes with labels $Y_i$ and some unlabeled nodes</p>
+<p>the features of nodes $F$</p>
+<p>Goal :</p>
+<p>Predict the labels of unlabeled nodes, or find $P(Y_v)$ given features and network</p>
+<h3 id="4-Pipeline-of-Collective-Classification"><a href="#4-Pipeline-of-Collective-Classification" class="headerlink" title="4. Pipeline of Collective Classification"></a>4. Pipeline of Collective Classification</h3><p>Hypothesis : Markov Assumption</p>
+<p>Pipeline : </p>
+<ul>
+<li>Local classifier : used for initial label assignment<ul>
+<li>Predict the nodes label used only their features, but not network information</li>
+</ul>
+</li>
+<li>Relational Classifier : capture correlation<ul>
+<li>label one node based on the labels or features of its neighbors</li>
+</ul>
+</li>
+<li>Collective Inference<ul>
+<li>apply the relational classifier to each node iteratively until the inconsistency between neighboring labels is minimized</li>
+<li>be affected by network structure</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-Relational-Classification"><a href="#5-Relational-Classification" class="headerlink" title="5. Relational Classification"></a>5. Relational Classification</h3><p>Base Idea : class probability of $Y_v$ of node $v$ is a weighted average of class probabilities of its neighbors</p>
+<p>Steps : </p>
+<ul>
+<li><p>Initial : initial labeled node $v$ with its ground-truth label $Y_v^*$ while initial unlabeled nodes $Y_v &#x3D; 0.5$</p>
+</li>
+<li><p>Update all nodes’ labels with formula follow until convergence:<br>$$<br>P(Y_v &#x3D; c) &#x3D; \frac 1 {\sum_{(v,u)\in E}A_{u,v}}\sum_{(v,u)\in E}A_{v,u} P(Y_u&#x3D;c)<br>$$<br>where $A$ is adjacency matrix with weight or strength information</p>
+</li>
+</ul>
+<p>Challenges :</p>
+<p>Convergence is not guaranteed</p>
+<p>model can’t use node feature information</p>
+<h3 id="6-Iterative-Classification"><a href="#6-Iterative-Classification" class="headerlink" title="6. Iterative Classification"></a>6. Iterative Classification</h3><p><strong>Main Idea</strong> : classify node $v$ with its attributions $f_v$ and the summary of labels $z_v$ of neighbors set $N_v$ </p>
+<p><strong>Approach</strong> : </p>
+<ul>
+<li><p>$\phi_1(f_v)$ : predict the label of node $v$ base of $f_v$</p>
+</li>
+<li><p>$\phi_2(f_v,z_v)$ : predict the label base of $f_v$ and $z_v$</p>
+</li>
+<li><p>the approaches of $z_v$</p>
+<ul>
+<li>histogram of the number of each label in $N_v$</li>
+<li>most common label in $N_v$</li>
+<li>number of different labels in $N_v$</li>
+</ul>
+</li>
+</ul>
+<p><strong>Steps</strong> :</p>
+<ul>
+<li>classify based on node attributions alone<ul>
+<li>train classifier $\phi_1,\phi_2$ with training set</li>
+</ul>
+</li>
+<li>Iterate till convergence<ul>
+<li>Initial : initial the labels with $\phi_1$</li>
+<li>Iterate : update $z_v$ based on $Y_u,\forall u \in N_v$ and then update $Y_v$ based on $f_v$ and $z_v$</li>
+</ul>
+</li>
+</ul>
+<p><strong>Challenges</strong> :</p>
+<p>Convergence is not guaranteed</p>
+<h3 id="7-Loopy-belief-propagation"><a href="#7-Loopy-belief-propagation" class="headerlink" title="7. Loopy belief propagation"></a>7. Loopy belief propagation</h3><p><strong>Notation</strong></p>
+<ul>
+<li>Label-label potential matrix $\psi$ : $\psi(Y_i,Y_j)$ is proportional to the probability of a node $j$ being in class $Y_j$ given that it has neighbor $i$ in $Y_i$</li>
+<li>Prior belief $\phi$ : $\phi(Y_i)$ is proportional to the probability of node $i$ being in class $Y_i$</li>
+<li>$m_{i\rightarrow j}(Y_j)$ : $i$’s message of $j$ being in $Y_j$</li>
+<li>$\mathcal L$ : set of all classes &#x2F; labels</li>
+</ul>
+<p><strong>Steps</strong></p>
+<ul>
+<li><p>Initial all messages to 1</p>
+</li>
+<li><p>repeat for each node by formula<br>$$<br>m_{i\rightarrow j}(Y_j) &#x3D; \sum_{Y_i\in \mathcal L} \psi(Y_i,Y_j) \phi(Y_i) \Pi_{k\in N_i&#x2F;j} m_{k\rightarrow i}(Y_i),\forall Y_j \in \mathcal L<br>$$</p>
+</li>
+</ul>
+<p><strong>Result</strong><br>$$<br>b_i(Y_i) &#x3D; \phi_i(Y_i)\Pi_{j \in N_i}m_{j\rightarrow i}(Y_i),\forall Y_i \in \mathcal L<br>$$<br><strong>Advantages</strong></p>
+<ul>
+<li>easy to program and parallelize</li>
+<li>can apply to any graph model with any form of potentials</li>
+</ul>
+<p><strong>Challenges</strong></p>
+<ul>
+<li>convergence is not guaranteed, especially if many closed loops</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/15/GNN-Notes-LEC-05/" data-id="cm4pfn6yh0006u0w54nvzecnl" data-title="GNN-Notes-LEC-05" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Certified Robustness inspired Attack Framework</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/">Certified Robustness inspired Attack Framework</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/">Certified Robustness via Randomized Smoothing</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
