@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN-Notes-LEC-10 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Heterogeneous Graph and Knowledge Graph1. Heterogeneous GraphsDefinitionG &#x3D; (V, E, R, T) V : set of nodes, which have their types in set T E : set of edges, which have their relations type in set">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN-Notes-LEC-10">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-10/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Heterogeneous Graph and Knowledge Graph1. Heterogeneous GraphsDefinitionG &#x3D; (V, E, R, T) V : set of nodes, which have their types in set T E : set of edges, which have their relations type in set">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-24T02:15:56.000Z">
+<meta property="article:modified_time" content="2024-12-24T02:16:11.471Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-10" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-10/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:15:56.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN-Notes-LEC-10
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Heterogeneous-Graph-and-Knowledge-Graph"><a href="#Heterogeneous-Graph-and-Knowledge-Graph" class="headerlink" title="Heterogeneous Graph and Knowledge Graph"></a>Heterogeneous Graph and Knowledge Graph</h2><h3 id="1-Heterogeneous-Graphs"><a href="#1-Heterogeneous-Graphs" class="headerlink" title="1. Heterogeneous Graphs"></a>1. Heterogeneous Graphs</h3><h4 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h4><p>G &#x3D; (V, E, R, T)</p>
+<p>V : set of nodes, which have their types in set T</p>
+<p>E : set of edges, which have their relations type in set R</p>
+<p>R : set of relations</p>
+<p>T : set of nodes’ type</p>
+<h3 id="2-Relation-GCN"><a href="#2-Relation-GCN" class="headerlink" title="2. Relation GCN"></a>2. Relation GCN</h3><h4 id="Formulation"><a href="#Formulation" class="headerlink" title="Formulation"></a>Formulation</h4><p>$$<br>h_v^{(l+1)} &#x3D; \sigma(\sum_{r \in R}\sum_{u\in N_v^r}\frac1{c_{v,r}} W_r^{(l)}h_u^{(l)}+W_0^{(l)}h_v^{(l)})<br>$$</p>
+<h4 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h4><h5 id="Block-Diagonal-Matrices"><a href="#Block-Diagonal-Matrices" class="headerlink" title="Block Diagonal Matrices"></a>Block Diagonal Matrices</h5><p>use B low-dim matrices to present $W_r^{(l)}$, which reduce parameters from $d^{(l)}\times d^{(l+1)}$ to $B\times \frac{d^{(l+1)}}B \times \frac{d^{(l)}}B$</p>
+<h5 id="Basis-Learning"><a href="#Basis-Learning" class="headerlink" title="Basis Learning"></a>Basis Learning</h5><p>regard $W_r^{(l)} &#x3D; \sum_{b&#x3D;1}^B a_{rb}^{(l)}\cdot V_b^{(l)}$ , where $V_b^{(l)}$ is shared and each relation need only learn ${a_{rb}^{l}}$</p>
+<h3 id="3-RGCN-For-Link-Prediction"><a href="#3-RGCN-For-Link-Prediction" class="headerlink" title="3. RGCN For Link Prediction"></a>3. RGCN For Link Prediction</h3><p><strong>Training</strong></p>
+<ol>
+<li>Split edges into training message edges, training supervision edges, validation edges and test edges</li>
+<li>use RGCN to score the training supervision edges</li>
+<li>create negative edges by perturbing the training supervision edges</li>
+<li>use RGCN to score the negative edges</li>
+<li>max the score of training supervision edges while min the score of negative edges</li>
+</ol>
+<p><strong>Evaluation</strong></p>
+<ol>
+<li>calculate the score of test edges</li>
+<li>calculate the score of negative edges, which produced by perturbing the test edges and not belong to training message edges and training supervision edges</li>
+<li>obtain the ranking RK of test edges</li>
+<li>calculate metrics (Higher is Better)<ol>
+<li>Hits K : 1[RK &lt;&#x3D; K]</li>
+<li>Reciprocal Rank : 1 &#x2F; RK</li>
+</ol>
+</li>
+</ol>
+<h3 id="4-Knowledge-Graph-Definition"><a href="#4-Knowledge-Graph-Definition" class="headerlink" title="4. Knowledge Graph Definition"></a>4. Knowledge Graph Definition</h3><p>Nodes labeled with Types —— Entities with Types</p>
+<p>Edges between Nodes —— Relations between Entities</p>
+<h3 id="5-Knowledge-Completion-Task"><a href="#5-Knowledge-Completion-Task" class="headerlink" title="5. Knowledge Completion Task"></a>5. Knowledge Completion Task</h3><h4 id="Definition-1"><a href="#Definition-1" class="headerlink" title="Definition"></a>Definition</h4><p>Given an enormous KG, and (head, relation), predict the missing tails</p>
+<h4 id="Key-Idea-of-KG-Presentation"><a href="#Key-Idea-of-KG-Presentation" class="headerlink" title="Key Idea of KG Presentation"></a>Key Idea of KG Presentation</h4><ul>
+<li>associate entities and relations with <strong>shallow embeddings</strong></li>
+<li>embeddings of (h,r) should be close to embedding of t</li>
+</ul>
+<h4 id="Key-Question"><a href="#Key-Question" class="headerlink" title="Key Question"></a>Key Question</h4><ul>
+<li>how to embed (h,r)</li>
+<li>how to define closeness</li>
+</ul>
+<h4 id="Relation-Pattern"><a href="#Relation-Pattern" class="headerlink" title="Relation Pattern"></a>Relation Pattern</h4><p>Symmetric : if r(a,b) then r(b,a)</p>
+<p>Antisymmetric : if r(a,b) then $\neg$r(b,a)</p>
+<p>inverse : if r1(a,b) then r2(b,a)</p>
+<p>composition &#x2F; transitive : if r1(a,b) and r2(b,c) then r3(a,c)</p>
+<p>1-to-N : r(a,b1), r(a,b2), …, r(a,bn) is true</p>
+<h4 id="TransE"><a href="#TransE" class="headerlink" title="TransE"></a>TransE</h4><p><strong>Intuition</strong></p>
+<p>for a triple (h, r, t), we hope $h + r \approx t$ if given fact is true else $h + r \ne t$</p>
+<p><strong>Scoring function</strong><br>$$<br>f_r(h,t) &#x3D; - |h+r-t|<br>$$<br><strong>Update Formulation</strong><br>$$<br>\sum_{[(h,l,t),(h’,l,t’)]\in batchT} \nabla [\gamma + d(h+l,t) - d(h’+l,t’)]\<br>$$<br><strong>Algorithm</strong></p>
+<p>k is the dim of embeddings</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">TransE</span>(<span class="params">S:<span class="built_in">set</span>[&#123;h,l,t&#125;],E:<span class="built_in">set</span>[entities],L:<span class="built_in">set</span>[link],k:<span class="built_in">int</span>,</span>):</span><br><span class="line">    <span class="comment"># Initial</span></span><br><span class="line">    <span class="keyword">for</span> l <span class="keyword">in</span> L:</span><br><span class="line">	    l = uniform(-<span class="number">6</span>/sqrt(k),-<span class="number">6</span>/sqrt(k))</span><br><span class="line">        l = l / ||l||</span><br><span class="line">    <span class="keyword">for</span> e <span class="keyword">in</span> E:</span><br><span class="line">        e = uniform(-<span class="number">6</span>/sqrt(k),-<span class="number">6</span>/sqrt(k))</span><br><span class="line">    <span class="comment"># Loop</span></span><br><span class="line">    <span class="keyword">while</span> :</span><br><span class="line">        <span class="keyword">for</span> e <span class="keyword">in</span> E :</span><br><span class="line">            e = e / || e ||</span><br><span class="line">        batchS = sample(S,batch_size)</span><br><span class="line">        batchT = <span class="built_in">set</span>()</span><br><span class="line">        <span class="keyword">for</span> (h,l,t) <span class="keyword">in</span> batchS:</span><br><span class="line">            h_n,l,t_n = neg_sample(S(h,l,t))</span><br><span class="line">            batchT.add([(h,l,t),(h_n,l,t_n)])</span><br><span class="line">        <span class="comment"># update</span></span><br><span class="line">        update <span class="keyword">with</span> formulation</span><br></pre></td></tr></table></figure>
+
+<p><strong>expression power</strong></p>
+<p>could express</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>composition</li>
+</ul>
+<p>but can’t express</p>
+<ul>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<h4 id="TransR"><a href="#TransR" class="headerlink" title="TransR"></a>TransR</h4><p><strong>Intuition</strong></p>
+<p>Entities in the Entity Space $\mathbb R^{d}$</p>
+<p>Relations in the Relation Space $\mathbb R^k$</p>
+<p>Projection matrix $M\in R^{d\times k}$ project entities to the Relation Space</p>
+<p>For Entity h and t, we hope the projections of them in the Relation Space satisfy $h_\bot + l \approx t_\bot$</p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; -|h_\bot +l-t_\bot|<br>$$<br><strong>Expression Power</strong></p>
+<p>could express:</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>composition &#x2F; transition</li>
+</ul>
+<h4 id="Bilinear-Modeling-DistMult"><a href="#Bilinear-Modeling-DistMult" class="headerlink" title="Bilinear Modeling : DistMult"></a>Bilinear Modeling : DistMult</h4><p><strong>Intuition</strong></p>
+<p>min the cosine similarity between h * r and t</p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; \sum_i h_i \cdot l_i \cdot t_i<br>$$<br><strong>Expression Power</strong></p>
+<p>could express</p>
+<ul>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>composition</li>
+</ul>
+<h4 id="ComplEx"><a href="#ComplEx" class="headerlink" title="ComplEx"></a>ComplEx</h4><p><strong>intuition</strong></p>
+<p>embedding entities and relations in <strong>Complex vector space</strong></p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; Re(\sum_i h_i \cdot r_i \cdot \bar t_i)\<br>t_i &#x3D; a + b i \Rightarrow \bar t_i &#x3D; a - b i<br>$$<br><strong>Expression Power</strong></p>
+<p>could express</p>
+<ul>
+<li>symmetric</li>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>composition</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-10/" data-id="cm51u529w0009bww51ri0d589" data-title="GNN-Notes-LEC-10" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/24/GNN-Notes-LEC-09/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GNN-Notes-LEC-09</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-10/">GNN-Notes-LEC-10</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-09/">GNN-Notes-LEC-09</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-07-08/">GNN-Notes-LEC-07-08</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-06/">GNN-Notes-LEC-06</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

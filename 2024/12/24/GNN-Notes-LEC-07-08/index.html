@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GNN-Notes-LEC-07-08 | MyBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Lec 07 &amp; 08 GNN1. A General GNN Framework GNN layer Message Aggregate   Layer connectivity Stack layers sequentially Ways of adding skip connections   Graph Augmentation Raw input graph $\ne$ comp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNN-Notes-LEC-07-08">
+<meta property="og:url" content="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-07-08/index.html">
+<meta property="og:site_name" content="MyBlog">
+<meta property="og:description" content="Lec 07 &amp; 08 GNN1. A General GNN Framework GNN layer Message Aggregate   Layer connectivity Stack layers sequentially Ways of adding skip connections   Graph Augmentation Raw input graph $\ne$ comp">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-24T02:15:14.000Z">
+<meta property="article:modified_time" content="2024-12-24T02:15:25.526Z">
+<meta property="article:author" content="Lin Fangyv">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="MyBlog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">MyBlog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bitlfy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GNN-Notes-LEC-07-08" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-07-08/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:15:14.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GNN-Notes-LEC-07-08
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="Lec-07-08-GNN"><a href="#Lec-07-08-GNN" class="headerlink" title="Lec 07 &amp; 08 GNN"></a>Lec 07 &amp; 08 GNN</h3><h3 id="1-A-General-GNN-Framework"><a href="#1-A-General-GNN-Framework" class="headerlink" title="1. A General GNN Framework"></a>1. A General GNN Framework</h3><ul>
+<li>GNN layer<ul>
+<li>Message</li>
+<li>Aggregate</li>
+</ul>
+</li>
+<li>Layer connectivity<ul>
+<li>Stack layers sequentially</li>
+<li>Ways of adding skip connections</li>
+</ul>
+</li>
+<li>Graph Augmentation<ul>
+<li>Raw input graph $\ne$ computational graph</li>
+<li>Graph feature augmentation</li>
+<li>Graph structure augmentation</li>
+</ul>
+</li>
+<li>Learning Objective<ul>
+<li>supervised &#x2F; unsupervised</li>
+<li>node &#x2F; edge &#x2F;  graph level</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-A-single-layer-of-a-GNN"><a href="#2-A-single-layer-of-a-GNN" class="headerlink" title="2. A single layer of a GNN"></a>2. A single layer of a GNN</h3><p>Idea : compress a set of vector into a single vector</p>
+<h4 id="Message-computation"><a href="#Message-computation" class="headerlink" title="Message computation"></a>Message computation</h4><p>Idea : each node will create message and sent to other node later</p>
+<p>Message function :<br>$$<br>m_u^{(l)} &#x3D; MSG^{(l)}(h_u^{(l-1)})),u\in N(v) \cup {v}<br>$$</p>
+<h4 id="Aggregation"><a href="#Aggregation" class="headerlink" title="Aggregation"></a>Aggregation</h4><p>Idea : each node will aggregate the message from node $v$’s neighbors</p>
+<p>Aggregation function :<br>$$<br>h_v^{(l)} &#x3D; AGG^{(l)}({m_u^{(l)},u\in N(v)},m_v^{(l)})<br>$$</p>
+<h4 id="Activation"><a href="#Activation" class="headerlink" title="Activation"></a>Activation</h4><p>can be added to message computation or aggregation</p>
+<h3 id="3-Various-GNN"><a href="#3-Various-GNN" class="headerlink" title="3. Various GNN"></a>3. Various GNN</h3><h4 id="GCN"><a href="#GCN" class="headerlink" title="GCN"></a>GCN</h4><p>$$<br>h_v^{(l)} &#x3D; \sigma(W^{(l)} \sum_{u\in N(v)}\frac{h_u^{(l-1)}}{|N(v)|})\<br>MSG^{(l)}(\cdot) &#x3D; W^{(l)}\frac{h_u^{(l-1)}}{|N(v)|}\<br>AGG^{(l)}(\cdot) &#x3D; \sum_{i \in N(v)} MSG^{(l)}(\cdot)<br>$$</p>
+<h4 id="GraphSAGE"><a href="#GraphSAGE" class="headerlink" title="GraphSAGE"></a>GraphSAGE</h4><p>$$<br>h_v^{l} &#x3D;\sigma(W^{(l)}\cdot CONCAT(h_v^{(l-1)},AGG({h_u^{(l-1)},\forall u \in N(v)})))\<br>AGG(\cdot) \in {Mean(\cdot),Pool(\cdot),LSTM(\cdot)}\<br>h_v^{(l)}\leftarrow \frac{h_v^{(l)}}{|h_v^{(l)}|_2}<br>$$</p>
+<h4 id="GAT"><a href="#GAT" class="headerlink" title="GAT"></a>GAT</h4><p>$$<br>h_v^l &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu} W^{(l)}h_u^{(l-1)})\<br>\alpha_{vu} &#x3D; \frac{\exp(e_{vu})}{\sum_{k\in N(v)}\exp(e_{vk})}\<br>e_{vu} &#x3D; a(W^{(l)}h_u^{(l-1)},W^{(l)}h_v^{(l-1)})<br>$$</p>
+<p>where a is attention mechanism function</p>
+<h4 id="GAT-with-Multi-Attention"><a href="#GAT-with-Multi-Attention" class="headerlink" title="GAT with Multi-Attention"></a>GAT with Multi-Attention</h4><p>$$<br>h_v^{(l)}[1] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^1 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)}[2] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^2 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)}[3] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^3 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)} &#x3D; AGG(h_v^{(l)}[1],h_v^{(l)}[2],h_v^{(l)}[3])<br>$$</p>
+<h3 id="4-GNN-Layer-in-Practice"><a href="#4-GNN-Layer-in-Practice" class="headerlink" title="4. GNN Layer in Practice"></a>4. GNN Layer in Practice</h3><ul>
+<li><p>Linear</p>
+</li>
+<li><p>Batch Normalization</p>
+<p>Stabilize neural network training<br>$$<br>\mu_j&#x3D;\frac1N\sum_{i&#x3D;1}^NX_{i,j}\<br>\sigma_j^2&#x3D;\frac1N\sum_{i&#x3D;1}^N(X_{i,j}-\mu_j)^2\<br>\widehat X_{i,j} &#x3D; \frac{X_{i,j}-\mu_j}{\sqrt{\sigma_j^2+\epsilon}}\<br>Y_{i,j} &#x3D; \gamma_j \widehat X_{i,j} + \beta_j<br>$$</p>
+</li>
+<li><p>Dropout</p>
+<p>prevent overfitting</p>
+<p>During training : with some probability $p$, randomly set some neurons to zero</p>
+<p>During testing : use all neurons to calculate</p>
+</li>
+<li><p>Activation</p>
+<ul>
+<li><p>ReLU<br>$$<br>ReLU(x_i) &#x3D; \max(x_i,0)<br>$$</p>
+</li>
+<li><p>Sigmoid<br>$$<br>\sigma(x_i) &#x3D; \frac 1 {1+e^{-x_i}}<br>$$</p>
+</li>
+<li><p>Parametric ReLU<br>$$<br>PReLU(x_i) &#x3D; \max(x_i,0) + a_i\min(x_i,0)<br>$$<br>where $a_i$ is a trainable parameter and it performs better than ReLU</p>
+</li>
+</ul>
+</li>
+<li><p>Attention &#x2F; Gating</p>
+<p>Control the importance of a message</p>
+</li>
+<li><p>Aggregation</p>
+</li>
+</ul>
+<h3 id="5-Stacking-Layers-of-a-GNN"><a href="#5-Stacking-Layers-of-a-GNN" class="headerlink" title="5. Stacking Layers of a GNN"></a>5. Stacking Layers of a GNN</h3><h4 id="Stack-layers-sequentially"><a href="#Stack-layers-sequentially" class="headerlink" title="Stack layers sequentially"></a>Stack layers sequentially</h4><p>$$<br>h_v^{(0)} &#x3D; x_v\<br>h_v^{(l)} &#x3D; GNN(h_v^{(l-1)})\<br>y &#x3D; h_v^{(L)}<br>$$</p>
+<h4 id="Over-Smoothing-Problem"><a href="#Over-Smoothing-Problem" class="headerlink" title="Over-Smoothing Problem"></a><strong>Over-Smoothing Problem</strong></h4><p>all the node embeddings converge to the same value</p>
+<p>due to the shared neighbors quickly grows when increase the number of hops</p>
+<h4 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a><strong>Solutions</strong></h4><ul>
+<li><p>be cautious when adding GNN layers : the L should be a bit more than the receptive field</p>
+<p>But <strong>How to enhance the expressive power with less GNN layers</strong></p>
+<ul>
+<li><p>within GNN layer : make AGG &#x2F; Transformation become a DNN</p>
+</li>
+<li><p>add layers that no pass messages : Pre-processing layers, or post-processing layers</p>
+</li>
+</ul>
+</li>
+<li><p>Skip Connections (ResNet)</p>
+<ul>
+<li>Function</li>
+</ul>
+<p>$$<br>F(x)\rightarrow F(x) + x<br>$$</p>
+<ul>
+<li><p>Intuition</p>
+<p>create a mixture of models</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-Graph-Manipulation"><a href="#6-Graph-Manipulation" class="headerlink" title="6. Graph Manipulation"></a>6. Graph Manipulation</h3><h4 id="Why-Manipulate-Graphs"><a href="#Why-Manipulate-Graphs" class="headerlink" title="Why Manipulate Graphs"></a>Why Manipulate Graphs</h4><ul>
+<li>Feature Level<ul>
+<li>input graph lack features</li>
+</ul>
+</li>
+<li>structure level<ul>
+<li>graph is too sparse so that message passing is inefficient</li>
+<li>graph is too dense so that message passing is too costly</li>
+<li>graph is too large so that can not fit the computational graph into GPU</li>
+</ul>
+</li>
+</ul>
+<h4 id="Graph-Feature-Manipulation"><a href="#Graph-Feature-Manipulation" class="headerlink" title="Graph Feature Manipulation"></a>Graph Feature Manipulation</h4><p><strong>Reason</strong></p>
+<ul>
+<li>input graph does not have node features</li>
+<li>certain structures are hard to learn by GNN, e.g. Cycle Graph</li>
+</ul>
+<p><strong>approaches</strong></p>
+<ul>
+<li>assign constant values to nodes</li>
+<li>assign unique ids to nodes</li>
+<li>add features by Clustering coefficient, PageRank, Centrality and so on</li>
+</ul>
+<h4 id="Augment-sparse-graphs"><a href="#Augment-sparse-graphs" class="headerlink" title="Augment sparse graphs"></a>Augment sparse graphs</h4><p><strong>Add virtual edges</strong></p>
+<p>Intuition : use $A+A^2$ instead of using $A$</p>
+<p>Use case : Bipartite graphs</p>
+<p><strong>Add virtual nodes</strong></p>
+<p>approach : add virtual node which connect all nodes in the graph</p>
+<p>Benefits : greatly improves message passing</p>
+<h4 id="Augment-Dense-Graphs"><a href="#Augment-Dense-Graphs" class="headerlink" title="Augment Dense Graphs"></a>Augment Dense Graphs</h4><p>approach : Neighborhood Sampling, that is, randomly sample a node’s neighborhood when compute the embeddings each time</p>
+<p>Benefits : greatly reduce the computational cost</p>
+<h3 id="7-Predict-With-GNN"><a href="#7-Predict-With-GNN" class="headerlink" title="7. Predict With GNN"></a>7. Predict With GNN</h3><h4 id="Node-Level-Prediction"><a href="#Node-Level-Prediction" class="headerlink" title="Node-Level Prediction"></a>Node-Level Prediction</h4><p>Input : d-dim node embeddings ${h_v^{(L)} \in \mathbb R^d,\forall v\in G}$</p>
+<p>Output : $\widehat y_v &#x3D; Head_{node}(h_v^{(L)})&#x3D;W^{(H)}h_v^{(L)}$</p>
+<h4 id="Edge-Level-Prediction"><a href="#Edge-Level-Prediction" class="headerlink" title="Edge-Level Prediction"></a>Edge-Level Prediction</h4><p>Output : $\widehat y_{uv} &#x3D; Head_{edge}(h_u^{(L)},h_v^{(L)})$</p>
+<p><strong>Concatenation plus Linear</strong></p>
+<p>$\widehat y_{uv} &#x3D; Linear(Concat(h_u^{(L)},h_v^{(L)}))$</p>
+<p><strong>Dot Product</strong></p>
+<p>1-way : $\widehat y_{uv} &#x3D; (h_u^{(L)})^T h_v^{(L)}$</p>
+<p>k-way : $\widehat y_{uv}^{(i)} &#x3D; h_u^{(L)}W^{(i)}h_v^{(L)},i\in[1,k]$</p>
+<h4 id="Graph-level-Prediction"><a href="#Graph-level-Prediction" class="headerlink" title="Graph-level Prediction"></a>Graph-level Prediction</h4><p>Output : $\widehat y_{G} &#x3D; Head_{graph}(h_v^{(L)}\in \mathbb R^d,\forall v\in G)$</p>
+<p><strong>Global Pooling</strong></p>
+<p>global mean &#x2F; max &#x2F; sum</p>
+<p>Weakness :  lose information with large graph</p>
+<p><strong>Hierarchical Global Pooling</strong></p>
+<p>use $ReLU(Sum(\cdot))$ to hierarchically aggregate</p>
+<p><strong>Differentiable Pooling</strong></p>
+<p>GNN<br>$$<br>Z &#x3D; GNN(X,A)<br>$$<br>Differentiable Pooling GNN<br>$$<br>(A^{(l+1)},X^{(l+1)}) &#x3D; DIFFPOOL(A^{(l)},Z^{(l)})<br>$$</p>
+<ul>
+<li>compute the cluster that a node belong to</li>
+<li>pooling in the cluster, and the edges between cluster would be generated</li>
+<li>joint train GNN and Differentiable Pooling GNN</li>
+</ul>
+<h3 id="8-Graph-Split"><a href="#8-Graph-Split" class="headerlink" title="8. Graph Split"></a>8. Graph Split</h3><p><strong>Transductive setting</strong> </p>
+<p>the input graph can be observed in all the dataset split, it means that we will only split the labels</p>
+<p><strong>Inductive setting</strong></p>
+<p>break the edges between splits to get multiple graphs</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-07-08/" data-id="cm51u529s0008bww5cjdk7f1o" data-title="GNN-Notes-LEC-07-08" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/12/24/GNN-Notes-LEC-09/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GNN-Notes-LEC-09
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/12/24/GNN-Notes-LEC-06/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GNN-Notes-LEC-06</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">December 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-10/">GNN-Notes-LEC-10</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-09/">GNN-Notes-LEC-09</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-07-08/">GNN-Notes-LEC-07-08</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-06/">GNN-Notes-LEC-06</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Lin Fangyv<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

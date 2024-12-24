@@ -69,6 +69,454 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GNN-Notes-LEC-10" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-10/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:15:56.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/24/GNN-Notes-LEC-10/">GNN-Notes-LEC-10</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Heterogeneous-Graph-and-Knowledge-Graph"><a href="#Heterogeneous-Graph-and-Knowledge-Graph" class="headerlink" title="Heterogeneous Graph and Knowledge Graph"></a>Heterogeneous Graph and Knowledge Graph</h2><h3 id="1-Heterogeneous-Graphs"><a href="#1-Heterogeneous-Graphs" class="headerlink" title="1. Heterogeneous Graphs"></a>1. Heterogeneous Graphs</h3><h4 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h4><p>G &#x3D; (V, E, R, T)</p>
+<p>V : set of nodes, which have their types in set T</p>
+<p>E : set of edges, which have their relations type in set R</p>
+<p>R : set of relations</p>
+<p>T : set of nodes’ type</p>
+<h3 id="2-Relation-GCN"><a href="#2-Relation-GCN" class="headerlink" title="2. Relation GCN"></a>2. Relation GCN</h3><h4 id="Formulation"><a href="#Formulation" class="headerlink" title="Formulation"></a>Formulation</h4><p>$$<br>h_v^{(l+1)} &#x3D; \sigma(\sum_{r \in R}\sum_{u\in N_v^r}\frac1{c_{v,r}} W_r^{(l)}h_u^{(l)}+W_0^{(l)}h_v^{(l)})<br>$$</p>
+<h4 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h4><h5 id="Block-Diagonal-Matrices"><a href="#Block-Diagonal-Matrices" class="headerlink" title="Block Diagonal Matrices"></a>Block Diagonal Matrices</h5><p>use B low-dim matrices to present $W_r^{(l)}$, which reduce parameters from $d^{(l)}\times d^{(l+1)}$ to $B\times \frac{d^{(l+1)}}B \times \frac{d^{(l)}}B$</p>
+<h5 id="Basis-Learning"><a href="#Basis-Learning" class="headerlink" title="Basis Learning"></a>Basis Learning</h5><p>regard $W_r^{(l)} &#x3D; \sum_{b&#x3D;1}^B a_{rb}^{(l)}\cdot V_b^{(l)}$ , where $V_b^{(l)}$ is shared and each relation need only learn ${a_{rb}^{l}}$</p>
+<h3 id="3-RGCN-For-Link-Prediction"><a href="#3-RGCN-For-Link-Prediction" class="headerlink" title="3. RGCN For Link Prediction"></a>3. RGCN For Link Prediction</h3><p><strong>Training</strong></p>
+<ol>
+<li>Split edges into training message edges, training supervision edges, validation edges and test edges</li>
+<li>use RGCN to score the training supervision edges</li>
+<li>create negative edges by perturbing the training supervision edges</li>
+<li>use RGCN to score the negative edges</li>
+<li>max the score of training supervision edges while min the score of negative edges</li>
+</ol>
+<p><strong>Evaluation</strong></p>
+<ol>
+<li>calculate the score of test edges</li>
+<li>calculate the score of negative edges, which produced by perturbing the test edges and not belong to training message edges and training supervision edges</li>
+<li>obtain the ranking RK of test edges</li>
+<li>calculate metrics (Higher is Better)<ol>
+<li>Hits K : 1[RK &lt;&#x3D; K]</li>
+<li>Reciprocal Rank : 1 &#x2F; RK</li>
+</ol>
+</li>
+</ol>
+<h3 id="4-Knowledge-Graph-Definition"><a href="#4-Knowledge-Graph-Definition" class="headerlink" title="4. Knowledge Graph Definition"></a>4. Knowledge Graph Definition</h3><p>Nodes labeled with Types —— Entities with Types</p>
+<p>Edges between Nodes —— Relations between Entities</p>
+<h3 id="5-Knowledge-Completion-Task"><a href="#5-Knowledge-Completion-Task" class="headerlink" title="5. Knowledge Completion Task"></a>5. Knowledge Completion Task</h3><h4 id="Definition-1"><a href="#Definition-1" class="headerlink" title="Definition"></a>Definition</h4><p>Given an enormous KG, and (head, relation), predict the missing tails</p>
+<h4 id="Key-Idea-of-KG-Presentation"><a href="#Key-Idea-of-KG-Presentation" class="headerlink" title="Key Idea of KG Presentation"></a>Key Idea of KG Presentation</h4><ul>
+<li>associate entities and relations with <strong>shallow embeddings</strong></li>
+<li>embeddings of (h,r) should be close to embedding of t</li>
+</ul>
+<h4 id="Key-Question"><a href="#Key-Question" class="headerlink" title="Key Question"></a>Key Question</h4><ul>
+<li>how to embed (h,r)</li>
+<li>how to define closeness</li>
+</ul>
+<h4 id="Relation-Pattern"><a href="#Relation-Pattern" class="headerlink" title="Relation Pattern"></a>Relation Pattern</h4><p>Symmetric : if r(a,b) then r(b,a)</p>
+<p>Antisymmetric : if r(a,b) then $\neg$r(b,a)</p>
+<p>inverse : if r1(a,b) then r2(b,a)</p>
+<p>composition &#x2F; transitive : if r1(a,b) and r2(b,c) then r3(a,c)</p>
+<p>1-to-N : r(a,b1), r(a,b2), …, r(a,bn) is true</p>
+<h4 id="TransE"><a href="#TransE" class="headerlink" title="TransE"></a>TransE</h4><p><strong>Intuition</strong></p>
+<p>for a triple (h, r, t), we hope $h + r \approx t$ if given fact is true else $h + r \ne t$</p>
+<p><strong>Scoring function</strong><br>$$<br>f_r(h,t) &#x3D; - |h+r-t|<br>$$<br><strong>Update Formulation</strong><br>$$<br>\sum_{[(h,l,t),(h’,l,t’)]\in batchT} \nabla [\gamma + d(h+l,t) - d(h’+l,t’)]\<br>$$<br><strong>Algorithm</strong></p>
+<p>k is the dim of embeddings</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">TransE</span>(<span class="params">S:<span class="built_in">set</span>[&#123;h,l,t&#125;],E:<span class="built_in">set</span>[entities],L:<span class="built_in">set</span>[link],k:<span class="built_in">int</span>,</span>):</span><br><span class="line">    <span class="comment"># Initial</span></span><br><span class="line">    <span class="keyword">for</span> l <span class="keyword">in</span> L:</span><br><span class="line">	    l = uniform(-<span class="number">6</span>/sqrt(k),-<span class="number">6</span>/sqrt(k))</span><br><span class="line">        l = l / ||l||</span><br><span class="line">    <span class="keyword">for</span> e <span class="keyword">in</span> E:</span><br><span class="line">        e = uniform(-<span class="number">6</span>/sqrt(k),-<span class="number">6</span>/sqrt(k))</span><br><span class="line">    <span class="comment"># Loop</span></span><br><span class="line">    <span class="keyword">while</span> :</span><br><span class="line">        <span class="keyword">for</span> e <span class="keyword">in</span> E :</span><br><span class="line">            e = e / || e ||</span><br><span class="line">        batchS = sample(S,batch_size)</span><br><span class="line">        batchT = <span class="built_in">set</span>()</span><br><span class="line">        <span class="keyword">for</span> (h,l,t) <span class="keyword">in</span> batchS:</span><br><span class="line">            h_n,l,t_n = neg_sample(S(h,l,t))</span><br><span class="line">            batchT.add([(h,l,t),(h_n,l,t_n)])</span><br><span class="line">        <span class="comment"># update</span></span><br><span class="line">        update <span class="keyword">with</span> formulation</span><br></pre></td></tr></table></figure>
+
+<p><strong>expression power</strong></p>
+<p>could express</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>composition</li>
+</ul>
+<p>but can’t express</p>
+<ul>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<h4 id="TransR"><a href="#TransR" class="headerlink" title="TransR"></a>TransR</h4><p><strong>Intuition</strong></p>
+<p>Entities in the Entity Space $\mathbb R^{d}$</p>
+<p>Relations in the Relation Space $\mathbb R^k$</p>
+<p>Projection matrix $M\in R^{d\times k}$ project entities to the Relation Space</p>
+<p>For Entity h and t, we hope the projections of them in the Relation Space satisfy $h_\bot + l \approx t_\bot$</p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; -|h_\bot +l-t_\bot|<br>$$<br><strong>Expression Power</strong></p>
+<p>could express:</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>composition &#x2F; transition</li>
+</ul>
+<h4 id="Bilinear-Modeling-DistMult"><a href="#Bilinear-Modeling-DistMult" class="headerlink" title="Bilinear Modeling : DistMult"></a>Bilinear Modeling : DistMult</h4><p><strong>Intuition</strong></p>
+<p>min the cosine similarity between h * r and t</p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; \sum_i h_i \cdot l_i \cdot t_i<br>$$<br><strong>Expression Power</strong></p>
+<p>could express</p>
+<ul>
+<li>symmetric</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>composition</li>
+</ul>
+<h4 id="ComplEx"><a href="#ComplEx" class="headerlink" title="ComplEx"></a>ComplEx</h4><p><strong>intuition</strong></p>
+<p>embedding entities and relations in <strong>Complex vector space</strong></p>
+<p><strong>Scoring Function</strong><br>$$<br>f_r(h,t) &#x3D; Re(\sum_i h_i \cdot r_i \cdot \bar t_i)\<br>t_i &#x3D; a + b i \Rightarrow \bar t_i &#x3D; a - b i<br>$$<br><strong>Expression Power</strong></p>
+<p>could express</p>
+<ul>
+<li>symmetric</li>
+<li>antisymmetric</li>
+<li>inverse</li>
+<li>1-to-N</li>
+</ul>
+<p>can’t express</p>
+<ul>
+<li>composition</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-10/" data-id="cm51u529w0009bww51ri0d589" data-title="GNN-Notes-LEC-10" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-09" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-09/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:15:33.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/24/GNN-Notes-LEC-09/">GNN-Notes-LEC-09</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-09-Theory"><a href="#Lec-09-Theory" class="headerlink" title="Lec 09 Theory"></a>Lec 09 Theory</h2><h3 id="1-how-a-GNN-captures-local-neighborhood-structures"><a href="#1-how-a-GNN-captures-local-neighborhood-structures" class="headerlink" title="1. how a GNN  captures local neighborhood structures ?"></a>1. how a GNN  captures local neighborhood structures ?</h3><p>(1) GNN captures local neighborhood structures by <strong>computational graph</strong></p>
+<p>(2) The key point of GNN expression is the <strong>aggregation function</strong>. In other word, most expressive GNN would use an <strong>injective function at each step</strong>.</p>
+<h3 id="2-Most-Powerful-GNN-GIN"><a href="#2-Most-Powerful-GNN-GIN" class="headerlink" title="2. Most Powerful GNN : GIN"></a>2. Most Powerful GNN : GIN</h3><p>Observation : Neighbor aggregation can be abstracted as <strong>a function over a multi-set</strong> </p>
+<h4 id="Problem-of-GCN-and-GraphSAGE"><a href="#Problem-of-GCN-and-GraphSAGE" class="headerlink" title="Problem of GCN and GraphSAGE"></a>Problem of GCN and GraphSAGE</h4><p>can’t distinguish different multi-sets</p>
+<h4 id="Injective-Multi-Set-Function"><a href="#Injective-Multi-Set-Function" class="headerlink" title="Injective Multi-Set Function"></a>Injective Multi-Set Function</h4><p><strong>General injective multi-set function formulation</strong><br>$$<br>\Phi(\sum_{x\in S}f(x))<br>$$<br>where $f(x)$ produces one-hot encodings of colors.</p>
+<p><strong>Universal Approximation Theorem</strong></p>
+<p>1-hidden layer MLP with sufficiency-large hidden dimensionality and appropriate non-linearity can approximate any continuous function to an arbitrary accuracy</p>
+<p><strong>Graph Isomorphism Network</strong><br>$$<br>MLP_{\Phi}(\sum_{x\in S}MLP_f(x))<br>$$<br>GIN is the most expressive GNN in the class of message-passing GNNs.</p>
+<h3 id="3-Full-Model-of-GIN"><a href="#3-Full-Model-of-GIN" class="headerlink" title="3. Full Model of GIN"></a>3. Full Model of GIN</h3><p><strong>General injective function over tuple formulation</strong><br>$$<br>MLP_{\Phi}((1+\epsilon)\cdot MLP_f(c^{(k)}(v))+\sum_{u\in N(v)}MLP_f(c^{(k)}(u)))<br>$$<br>where $\epsilon$ is learn-able scalar</p>
+<p><strong>GIN’s node updates</strong></p>
+<ol>
+<li><p>assign an initial vector $c^{(0)}(v)$ to each node $v$</p>
+</li>
+<li><p>Iteratively update node vectors by<br>$$<br>c^{(k+1)}(v) &#x3D; GINCONV({c^{(k)}(v),{c^{(k)}(u)}_{u\in N(v)}})<br>$$<br>where GINConv maps different inputs to different embeddings.</p>
+</li>
+<li><p>after K steps, $c^{(k)}(k)$ summarizes the structure of K-hop neighborhood</p>
+</li>
+</ol>
+<p><strong>Improve GNN’s Power</strong> </p>
+<p>There are basic graph structures that existing GNN  framework cannot distinguish, such as difference in cycles.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-09/" data-id="cm51u529x000abww5b1erfk1d" data-title="GNN-Notes-LEC-09" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-07-08" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-07-08/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:15:14.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/24/GNN-Notes-LEC-07-08/">GNN-Notes-LEC-07-08</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="Lec-07-08-GNN"><a href="#Lec-07-08-GNN" class="headerlink" title="Lec 07 &amp; 08 GNN"></a>Lec 07 &amp; 08 GNN</h3><h3 id="1-A-General-GNN-Framework"><a href="#1-A-General-GNN-Framework" class="headerlink" title="1. A General GNN Framework"></a>1. A General GNN Framework</h3><ul>
+<li>GNN layer<ul>
+<li>Message</li>
+<li>Aggregate</li>
+</ul>
+</li>
+<li>Layer connectivity<ul>
+<li>Stack layers sequentially</li>
+<li>Ways of adding skip connections</li>
+</ul>
+</li>
+<li>Graph Augmentation<ul>
+<li>Raw input graph $\ne$ computational graph</li>
+<li>Graph feature augmentation</li>
+<li>Graph structure augmentation</li>
+</ul>
+</li>
+<li>Learning Objective<ul>
+<li>supervised &#x2F; unsupervised</li>
+<li>node &#x2F; edge &#x2F;  graph level</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-A-single-layer-of-a-GNN"><a href="#2-A-single-layer-of-a-GNN" class="headerlink" title="2. A single layer of a GNN"></a>2. A single layer of a GNN</h3><p>Idea : compress a set of vector into a single vector</p>
+<h4 id="Message-computation"><a href="#Message-computation" class="headerlink" title="Message computation"></a>Message computation</h4><p>Idea : each node will create message and sent to other node later</p>
+<p>Message function :<br>$$<br>m_u^{(l)} &#x3D; MSG^{(l)}(h_u^{(l-1)})),u\in N(v) \cup {v}<br>$$</p>
+<h4 id="Aggregation"><a href="#Aggregation" class="headerlink" title="Aggregation"></a>Aggregation</h4><p>Idea : each node will aggregate the message from node $v$’s neighbors</p>
+<p>Aggregation function :<br>$$<br>h_v^{(l)} &#x3D; AGG^{(l)}({m_u^{(l)},u\in N(v)},m_v^{(l)})<br>$$</p>
+<h4 id="Activation"><a href="#Activation" class="headerlink" title="Activation"></a>Activation</h4><p>can be added to message computation or aggregation</p>
+<h3 id="3-Various-GNN"><a href="#3-Various-GNN" class="headerlink" title="3. Various GNN"></a>3. Various GNN</h3><h4 id="GCN"><a href="#GCN" class="headerlink" title="GCN"></a>GCN</h4><p>$$<br>h_v^{(l)} &#x3D; \sigma(W^{(l)} \sum_{u\in N(v)}\frac{h_u^{(l-1)}}{|N(v)|})\<br>MSG^{(l)}(\cdot) &#x3D; W^{(l)}\frac{h_u^{(l-1)}}{|N(v)|}\<br>AGG^{(l)}(\cdot) &#x3D; \sum_{i \in N(v)} MSG^{(l)}(\cdot)<br>$$</p>
+<h4 id="GraphSAGE"><a href="#GraphSAGE" class="headerlink" title="GraphSAGE"></a>GraphSAGE</h4><p>$$<br>h_v^{l} &#x3D;\sigma(W^{(l)}\cdot CONCAT(h_v^{(l-1)},AGG({h_u^{(l-1)},\forall u \in N(v)})))\<br>AGG(\cdot) \in {Mean(\cdot),Pool(\cdot),LSTM(\cdot)}\<br>h_v^{(l)}\leftarrow \frac{h_v^{(l)}}{|h_v^{(l)}|_2}<br>$$</p>
+<h4 id="GAT"><a href="#GAT" class="headerlink" title="GAT"></a>GAT</h4><p>$$<br>h_v^l &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu} W^{(l)}h_u^{(l-1)})\<br>\alpha_{vu} &#x3D; \frac{\exp(e_{vu})}{\sum_{k\in N(v)}\exp(e_{vk})}\<br>e_{vu} &#x3D; a(W^{(l)}h_u^{(l-1)},W^{(l)}h_v^{(l-1)})<br>$$</p>
+<p>where a is attention mechanism function</p>
+<h4 id="GAT-with-Multi-Attention"><a href="#GAT-with-Multi-Attention" class="headerlink" title="GAT with Multi-Attention"></a>GAT with Multi-Attention</h4><p>$$<br>h_v^{(l)}[1] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^1 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)}[2] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^2 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)}[3] &#x3D; \sigma(\sum_{u\in N(v)}\alpha_{vu}^3 W^{(l)}h_u^{(l-1)})\<br>h_v^{(l)} &#x3D; AGG(h_v^{(l)}[1],h_v^{(l)}[2],h_v^{(l)}[3])<br>$$</p>
+<h3 id="4-GNN-Layer-in-Practice"><a href="#4-GNN-Layer-in-Practice" class="headerlink" title="4. GNN Layer in Practice"></a>4. GNN Layer in Practice</h3><ul>
+<li><p>Linear</p>
+</li>
+<li><p>Batch Normalization</p>
+<p>Stabilize neural network training<br>$$<br>\mu_j&#x3D;\frac1N\sum_{i&#x3D;1}^NX_{i,j}\<br>\sigma_j^2&#x3D;\frac1N\sum_{i&#x3D;1}^N(X_{i,j}-\mu_j)^2\<br>\widehat X_{i,j} &#x3D; \frac{X_{i,j}-\mu_j}{\sqrt{\sigma_j^2+\epsilon}}\<br>Y_{i,j} &#x3D; \gamma_j \widehat X_{i,j} + \beta_j<br>$$</p>
+</li>
+<li><p>Dropout</p>
+<p>prevent overfitting</p>
+<p>During training : with some probability $p$, randomly set some neurons to zero</p>
+<p>During testing : use all neurons to calculate</p>
+</li>
+<li><p>Activation</p>
+<ul>
+<li><p>ReLU<br>$$<br>ReLU(x_i) &#x3D; \max(x_i,0)<br>$$</p>
+</li>
+<li><p>Sigmoid<br>$$<br>\sigma(x_i) &#x3D; \frac 1 {1+e^{-x_i}}<br>$$</p>
+</li>
+<li><p>Parametric ReLU<br>$$<br>PReLU(x_i) &#x3D; \max(x_i,0) + a_i\min(x_i,0)<br>$$<br>where $a_i$ is a trainable parameter and it performs better than ReLU</p>
+</li>
+</ul>
+</li>
+<li><p>Attention &#x2F; Gating</p>
+<p>Control the importance of a message</p>
+</li>
+<li><p>Aggregation</p>
+</li>
+</ul>
+<h3 id="5-Stacking-Layers-of-a-GNN"><a href="#5-Stacking-Layers-of-a-GNN" class="headerlink" title="5. Stacking Layers of a GNN"></a>5. Stacking Layers of a GNN</h3><h4 id="Stack-layers-sequentially"><a href="#Stack-layers-sequentially" class="headerlink" title="Stack layers sequentially"></a>Stack layers sequentially</h4><p>$$<br>h_v^{(0)} &#x3D; x_v\<br>h_v^{(l)} &#x3D; GNN(h_v^{(l-1)})\<br>y &#x3D; h_v^{(L)}<br>$$</p>
+<h4 id="Over-Smoothing-Problem"><a href="#Over-Smoothing-Problem" class="headerlink" title="Over-Smoothing Problem"></a><strong>Over-Smoothing Problem</strong></h4><p>all the node embeddings converge to the same value</p>
+<p>due to the shared neighbors quickly grows when increase the number of hops</p>
+<h4 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a><strong>Solutions</strong></h4><ul>
+<li><p>be cautious when adding GNN layers : the L should be a bit more than the receptive field</p>
+<p>But <strong>How to enhance the expressive power with less GNN layers</strong></p>
+<ul>
+<li><p>within GNN layer : make AGG &#x2F; Transformation become a DNN</p>
+</li>
+<li><p>add layers that no pass messages : Pre-processing layers, or post-processing layers</p>
+</li>
+</ul>
+</li>
+<li><p>Skip Connections (ResNet)</p>
+<ul>
+<li>Function</li>
+</ul>
+<p>$$<br>F(x)\rightarrow F(x) + x<br>$$</p>
+<ul>
+<li><p>Intuition</p>
+<p>create a mixture of models</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-Graph-Manipulation"><a href="#6-Graph-Manipulation" class="headerlink" title="6. Graph Manipulation"></a>6. Graph Manipulation</h3><h4 id="Why-Manipulate-Graphs"><a href="#Why-Manipulate-Graphs" class="headerlink" title="Why Manipulate Graphs"></a>Why Manipulate Graphs</h4><ul>
+<li>Feature Level<ul>
+<li>input graph lack features</li>
+</ul>
+</li>
+<li>structure level<ul>
+<li>graph is too sparse so that message passing is inefficient</li>
+<li>graph is too dense so that message passing is too costly</li>
+<li>graph is too large so that can not fit the computational graph into GPU</li>
+</ul>
+</li>
+</ul>
+<h4 id="Graph-Feature-Manipulation"><a href="#Graph-Feature-Manipulation" class="headerlink" title="Graph Feature Manipulation"></a>Graph Feature Manipulation</h4><p><strong>Reason</strong></p>
+<ul>
+<li>input graph does not have node features</li>
+<li>certain structures are hard to learn by GNN, e.g. Cycle Graph</li>
+</ul>
+<p><strong>approaches</strong></p>
+<ul>
+<li>assign constant values to nodes</li>
+<li>assign unique ids to nodes</li>
+<li>add features by Clustering coefficient, PageRank, Centrality and so on</li>
+</ul>
+<h4 id="Augment-sparse-graphs"><a href="#Augment-sparse-graphs" class="headerlink" title="Augment sparse graphs"></a>Augment sparse graphs</h4><p><strong>Add virtual edges</strong></p>
+<p>Intuition : use $A+A^2$ instead of using $A$</p>
+<p>Use case : Bipartite graphs</p>
+<p><strong>Add virtual nodes</strong></p>
+<p>approach : add virtual node which connect all nodes in the graph</p>
+<p>Benefits : greatly improves message passing</p>
+<h4 id="Augment-Dense-Graphs"><a href="#Augment-Dense-Graphs" class="headerlink" title="Augment Dense Graphs"></a>Augment Dense Graphs</h4><p>approach : Neighborhood Sampling, that is, randomly sample a node’s neighborhood when compute the embeddings each time</p>
+<p>Benefits : greatly reduce the computational cost</p>
+<h3 id="7-Predict-With-GNN"><a href="#7-Predict-With-GNN" class="headerlink" title="7. Predict With GNN"></a>7. Predict With GNN</h3><h4 id="Node-Level-Prediction"><a href="#Node-Level-Prediction" class="headerlink" title="Node-Level Prediction"></a>Node-Level Prediction</h4><p>Input : d-dim node embeddings ${h_v^{(L)} \in \mathbb R^d,\forall v\in G}$</p>
+<p>Output : $\widehat y_v &#x3D; Head_{node}(h_v^{(L)})&#x3D;W^{(H)}h_v^{(L)}$</p>
+<h4 id="Edge-Level-Prediction"><a href="#Edge-Level-Prediction" class="headerlink" title="Edge-Level Prediction"></a>Edge-Level Prediction</h4><p>Output : $\widehat y_{uv} &#x3D; Head_{edge}(h_u^{(L)},h_v^{(L)})$</p>
+<p><strong>Concatenation plus Linear</strong></p>
+<p>$\widehat y_{uv} &#x3D; Linear(Concat(h_u^{(L)},h_v^{(L)}))$</p>
+<p><strong>Dot Product</strong></p>
+<p>1-way : $\widehat y_{uv} &#x3D; (h_u^{(L)})^T h_v^{(L)}$</p>
+<p>k-way : $\widehat y_{uv}^{(i)} &#x3D; h_u^{(L)}W^{(i)}h_v^{(L)},i\in[1,k]$</p>
+<h4 id="Graph-level-Prediction"><a href="#Graph-level-Prediction" class="headerlink" title="Graph-level Prediction"></a>Graph-level Prediction</h4><p>Output : $\widehat y_{G} &#x3D; Head_{graph}(h_v^{(L)}\in \mathbb R^d,\forall v\in G)$</p>
+<p><strong>Global Pooling</strong></p>
+<p>global mean &#x2F; max &#x2F; sum</p>
+<p>Weakness :  lose information with large graph</p>
+<p><strong>Hierarchical Global Pooling</strong></p>
+<p>use $ReLU(Sum(\cdot))$ to hierarchically aggregate</p>
+<p><strong>Differentiable Pooling</strong></p>
+<p>GNN<br>$$<br>Z &#x3D; GNN(X,A)<br>$$<br>Differentiable Pooling GNN<br>$$<br>(A^{(l+1)},X^{(l+1)}) &#x3D; DIFFPOOL(A^{(l)},Z^{(l)})<br>$$</p>
+<ul>
+<li>compute the cluster that a node belong to</li>
+<li>pooling in the cluster, and the edges between cluster would be generated</li>
+<li>joint train GNN and Differentiable Pooling GNN</li>
+</ul>
+<h3 id="8-Graph-Split"><a href="#8-Graph-Split" class="headerlink" title="8. Graph Split"></a>8. Graph Split</h3><p><strong>Transductive setting</strong> </p>
+<p>the input graph can be observed in all the dataset split, it means that we will only split the labels</p>
+<p><strong>Inductive setting</strong></p>
+<p>break the edges between splits to get multiple graphs</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-07-08/" data-id="cm51u529s0008bww5cjdk7f1o" data-title="GNN-Notes-LEC-07-08" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-GNN-Notes-LEC-06" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/24/GNN-Notes-LEC-06/" class="article-date">
+  <time class="dt-published" datetime="2024-12-24T02:14:28.000Z" itemprop="datePublished">2024-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/24/GNN-Notes-LEC-06/">GNN-Notes-LEC-06</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="Lec-06-Deep-Learning-for-Graphs"><a href="#Lec-06-Deep-Learning-for-Graphs" class="headerlink" title="Lec 06 Deep Learning for Graphs"></a>Lec 06 Deep Learning for Graphs</h2><h3 id="1-Problem-Definition"><a href="#1-Problem-Definition" class="headerlink" title="1. Problem Definition"></a>1. Problem Definition</h3><p>Given graph G : </p>
+<p>$V$ : vertex set</p>
+<p>$A$ : adjacency matrix</p>
+<p>$X \in \mathbb R^{m\times|V|}$ : node features matrixs</p>
+<p>$v$ : a node in vertex set</p>
+<p>$N(v)$ : the neighbors of vertex $v$</p>
+<h3 id="2-Neighborhood-Aggregation"><a href="#2-Neighborhood-Aggregation" class="headerlink" title="2. Neighborhood Aggregation"></a>2. Neighborhood Aggregation</h3><p><strong>Formulation of Scalar</strong><br>$$<br>h_v^0 &#x3D; x_v\<br>h_v^{(l+1)} &#x3D; \sigma(W_l\sum_{u\in N(v)}\frac{h_u^{(l)}}{|N(v)|}+B_lh_v^{(l)}),\forall l\in{0,1,…}\<br>z_v &#x3D; h_v^{(L)}<br>$$<br><strong>Formulation of Matrix</strong><br>$$<br>H^{(l)} &#x3D; [h_1^{(l)},h_2^{(l)},…,h_{|V|}^{(l)}]\<br>\sum_{u\in N(v)} h_u^{(l)} &#x3D; A \cdot H^{(l)}\<br>D\in R^{|V|\times |V|},\ where\ D_{v,v}&#x3D;|N(v)|\<br>H^{(l+1)} &#x3D; \sigma(W_lD^{-1}AH^{(l)}+H^{(l)}B_l^T)<br>$$<br><strong>Advantage</strong> : on the fly</p>
+<h3 id="3-How-to-train-GNN"><a href="#3-How-to-train-GNN" class="headerlink" title="3. How to train GNN?"></a>3. How to train GNN?</h3><p><strong>Supervised setting</strong><br>$$<br>\min_{\Theta} \mathcal L(y,f(z_v))<br>$$<br><strong>Unsupervised setting</strong></p>
+<p>Idea : use the graph structure as the supervision<br>$$<br>\mathcal L &#x3D; \sum_{z_u,z_v}CE(y_{u,v},DEC(z_u,z_v))<br>$$</p>
+<h3 id="4-GraphSAGE-GCN"><a href="#4-GraphSAGE-GCN" class="headerlink" title="4. GraphSAGE &#x2F; GCN"></a>4. GraphSAGE &#x2F; GCN</h3><p><strong>Ideas of GraphSAGE</strong></p>
+<ol>
+<li>flexible aggregation function and  concatenation</li>
+</ol>
+<p>$$<br>h_v^{(l+1)} &#x3D; \sigma([W_l\cdot AGG({h_u^{(l)},\forall u \in N(v)}),B_lh_v^{(l)}])<br>$$</p>
+<ol start="2">
+<li>$l_2$ normalization<br>$$<br>h_v^k \leftarrow \frac{h_v^k}{|h_v^k|_2}<br>$$</li>
+</ol>
+<p><strong>All kinds of AGG</strong></p>
+<ol>
+<li><p>Mean<br>$$<br>AGG({h_u^{(l)},\forall u \in N(v)}) &#x3D; \sum_{u\in N(v)}\frac{h_u^{(l)}}{|N(v)|}<br>$$</p>
+</li>
+<li><p>Pool<br>$$<br>AGG({h_u^{(l)},\forall u \in N(v)}) &#x3D; \gamma({MLP(h_u^{(l)}),\forall u \in N(v)})<br>$$<br>$\gamma$ is element-wise mean or max</p>
+</li>
+<li><p>LSTM<br>$$<br>AGG({h_u^{(l)},\forall u \in N(v)}) &#x3D; LSTM([h_u^{(l)},\forall u \in (N(v))])<br>$$</p>
+</li>
+<li></li>
+</ol>
+<p>In fact, the AGG is the convolution of graph</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bitlfy.github.io/2024/12/24/GNN-Notes-LEC-06/" data-id="cm51u529q0007bww59qd863rn" data-title="GNN-Notes-LEC-06" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-GNN-Notes-LEC-05" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/15/GNN-Notes-LEC-05/" class="article-date">
@@ -197,7 +645,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/15/GNN-Notes-LEC-05/" data-id="cm4pfn6yh0006u0w54nvzecnl" data-title="GNN-Notes-LEC-05" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/15/GNN-Notes-LEC-05/" data-id="cm51u529p0006bww5ggamdpm0" data-title="GNN-Notes-LEC-05" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -343,7 +791,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" data-id="cm4pfn6yb0000u0w50jza9xco" data-title="Certified Robustness inspired Attack Framework" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/12/Certified-Robustness-inspired-Attack-Framework/" data-id="cm51u529f0001bww5g2t82rlo" data-title="Certified Robustness inspired Attack Framework" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -410,7 +858,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm4pfn6ye0001u0w541ptd34j" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/" data-id="cm51u52960000bww5huhj0a1d" data-title="Certified Robustness via Randomized Smoothing" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -504,7 +952,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm4pfn6yh0005u0w5c7e95cn5" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-04/" data-id="cm51u529o0005bww549mz6vm0" data-title="GNN Notes : LEC 04" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -636,7 +1084,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm4pfn6yg0004u0w5fdmed8so" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-03/" data-id="cm51u529m0004bww591zs6mfa" data-title="GNN Notes : LEC 03" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -757,518 +1205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm4pfn6yg0003u0w5d8o71ojj" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-GNN-Notes-LEC-01" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/12/06/GNN-Notes-LEC-01/" class="article-date">
-  <time class="dt-published" datetime="2024-12-06T11:49:00.000Z" itemprop="datePublished">2024-12-06</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/12/06/GNN-Notes-LEC-01/">GNN Notes : LEC 01</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="Lec-01-GNN"><a href="#Lec-01-GNN" class="headerlink" title="Lec 01 GNN"></a>Lec 01 GNN</h2><h3 id="1-Why-Graph"><a href="#1-Why-Graph" class="headerlink" title="1. Why Graph?"></a>1. Why Graph?</h3><p>Graph is general language for <strong>entities with relations</strong></p>
-<h3 id="2-Type-of-Graph"><a href="#2-Type-of-Graph" class="headerlink" title="2. Type of Graph"></a>2. Type of Graph</h3><ul>
-<li>Natural Network</li>
-<li>Graph</li>
-</ul>
-<h3 id="3-Why-Hard"><a href="#3-Why-Hard" class="headerlink" title="3. Why Hard?"></a>3. Why Hard?</h3><ul>
-<li>Arbitrary size &amp; Complex topology</li>
-<li>No reference point</li>
-<li>Dynamic</li>
-<li>multimodal</li>
-</ul>
-<h3 id="4-Process-of-supervised-graph"><a href="#4-Process-of-supervised-graph" class="headerlink" title="4. Process of supervised graph"></a>4. Process of supervised graph</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">1[RawData]--&gt;2[GraphData]--&gt;3[LearningAlgorithm]--&gt;4[Model]</span><br></pre></td></tr></table></figure>
-
-<p>Use <strong>Represent Learning</strong> instead of <strong>Feature Engineering</strong> to realize transferring raw data to graph data</p>
-<h3 id="5-Classic-Graph-ML-Tasks"><a href="#5-Classic-Graph-ML-Tasks" class="headerlink" title="5. Classic Graph ML Tasks"></a>5. Classic Graph ML Tasks</h3><ul>
-<li>Node Classification</li>
-<li>Edge Prediction</li>
-<li>Graph Classification</li>
-<li>Clustering : if nodes form a community</li>
-<li>Graph Generation</li>
-<li>Graph Evolution</li>
-</ul>
-<h3 id="6-Examples-of-Graph-ML-Tasks"><a href="#6-Examples-of-Graph-ML-Tasks" class="headerlink" title="6. Examples of Graph ML Tasks"></a>6. Examples of Graph ML Tasks</h3><p><strong>Node Level</strong></p>
-<p>predict residue’s position</p>
-<p><strong>Edge Level</strong></p>
-<p>Recommend System</p>
-<p>Predict the size effects</p>
-<p><strong>Subgraph Level</strong></p>
-<p>Traffic Prediction</p>
-<p><strong>Graph Level</strong></p>
-<p>Drug Discovery</p>
-<p>Generating novel molecules</p>
-<h3 id="7-Components-of-a-Network"><a href="#7-Components-of-a-Network" class="headerlink" title="7. Components of a Network"></a>7. Components of a Network</h3><p>$N$ : nodes or vertices</p>
-<p>$E$ : edges or links</p>
-<p>$G(N,E)$ : network or graph</p>
-<h3 id="8-Network-Classification"><a href="#8-Network-Classification" class="headerlink" title="8. Network Classification"></a>8. Network Classification</h3><p><strong>classification from Attribution</strong></p>
-<ul>
-<li>Directed &#x2F; Undirected</li>
-<li>Weighted &#x2F; Unweighted</li>
-<li>self-edge</li>
-<li>multi-graph</li>
-<li>strongly connected &#x2F; weakly connected &#x2F; disconnected</li>
-</ul>
-<p><strong>Special Class</strong></p>
-<ul>
-<li>Bipartite Graph</li>
-<li>Folded Bipartite Graph</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">flowchart TB</span><br><span class="line">subgraph Projection-V</span><br><span class="line">VA[A]</span><br><span class="line">VB[B]</span><br><span class="line">VC[C]</span><br><span class="line">VD[D]</span><br><span class="line">VA---VB</span><br><span class="line">VB---VC</span><br><span class="line">VC---VD</span><br><span class="line">VB---VD</span><br><span class="line">end</span><br><span class="line">subgraph total</span><br><span class="line">T1((1))</span><br><span class="line">T2((2))</span><br><span class="line">T3((3))</span><br><span class="line">T4((4))</span><br><span class="line">T5((5))</span><br><span class="line">T6((6))</span><br><span class="line">T7((7))</span><br><span class="line">TA[A]</span><br><span class="line">TB[B]</span><br><span class="line">TC[C]</span><br><span class="line">TD[D]</span><br><span class="line">T1 &amp; T2 &amp; T3 --- TA</span><br><span class="line">T2 &amp; T5 --- TB</span><br><span class="line">T4 &amp; T5 --- TC</span><br><span class="line">T5 &amp; T6 &amp; T7 --- TD</span><br><span class="line">end</span><br><span class="line">subgraph Projection-U</span><br><span class="line">U1((1))</span><br><span class="line">U2((2))</span><br><span class="line">U3((3))</span><br><span class="line">U4((4))</span><br><span class="line">U5((5))</span><br><span class="line">U6((6))</span><br><span class="line">U7((7))</span><br><span class="line">U1---U2---U3---U1</span><br><span class="line">U2---U5</span><br><span class="line">U6---U7---U5---U6</span><br><span class="line">U5---U4</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-<h3 id="9-Node-Degree"><a href="#9-Node-Degree" class="headerlink" title="9. Node Degree"></a>9. Node Degree</h3><p><strong>For Undirected</strong></p>
-<p>$k_i$ : the degree of node $i$</p>
-<p>$\bar k$ : the average degree of nodes</p>
-<p>$\bar k &#x3D; \frac 1 N \sum_{i&#x3D;1}^N k_i&#x3D;\frac{2|E|}{N}$ </p>
-<p><strong>For Directed</strong></p>
-<p>$k_i^{in}$ : the in-degree of node $i$</p>
-<p>$k_i^{out}$ : the out-degree of node $i$</p>
-<p>$\bar k_i^{in} &#x3D; \bar k_i^{out} &#x3D; \frac{|E|}{|N|}$</p>
-<h3 id="10-Represent-Graph"><a href="#10-Represent-Graph" class="headerlink" title="10. Represent Graph"></a>10. Represent Graph</h3><h4 id="1-Adjacency-Matrix"><a href="#1-Adjacency-Matrix" class="headerlink" title="(1) Adjacency Matrix"></a>(1) Adjacency Matrix</h4><p><strong>Element $A_{ij}$</strong><br>$$<br>A_{ij} &#x3D; \left{ \begin{array}{rcl}<br>1 &amp; , &amp; if\ link\ from\ i\ to\ j\ exists\<br>0 &amp; , &amp; otherwise<br>\end{array}\right.<br>$$<br><strong>Degrees</strong> </p>
-<p><em><strong>For Undirected</strong></em></p>
-<p>$k_i &#x3D; \sum_{j&#x3D;1}^N A_{ij}$</p>
-<p>$k_j &#x3D; \sum_{i&#x3D;1}^N A_{ij}$ </p>
-<p>$L &#x3D; \frac 12 \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
-<p><em><strong>For Directed</strong></em></p>
-<p>$k_j^{in} &#x3D; \sum_{i&#x3D;1}^{N}A_ij$</p>
-<p>$k_i^{out} &#x3D; \sum_{j&#x3D;1}^{N}A_ij$</p>
-<p>$L &#x3D; \sum_{i&#x3D;1}^N \sum_{j&#x3D;1}^N A_{ij}$</p>
-<h4 id="2-Edge-List"><a href="#2-Edge-List" class="headerlink" title="(2) Edge List"></a>(2) Edge List</h4><h4 id="3-Adjacency-List"><a href="#3-Adjacency-List" class="headerlink" title="(3) Adjacency List"></a>(3) Adjacency List</h4>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-01/" data-id="cm4pfn6yf0002u0w55cxj3w7m" data-title="GNN Notes : LEC 01" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" class="article-date">
-  <time class="dt-published" datetime="2024-12-06T09:35:05.000Z" itemprop="datePublished">2024-12-06</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/">paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses"><a href="#Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses" class="headerlink" title="Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses"></a>Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><h4 id="background"><a href="#background" class="headerlink" title="background"></a>background</h4><ul>
-<li>backdoor attacks ： inject backdoor trigger into training data so that the trained model could output as attacker desired</li>
-<li>No defense exist for FedGL against backdoor attack</li>
-</ul>
-<h4 id="contribution"><a href="#contribution" class="headerlink" title="contribution"></a>contribution</h4><ol>
-<li><p>Attack Generator : effective, stealthy, persistent backdoor attack on FedGL and its generator</p>
-</li>
-<li><p>Uselessness of Empirical defenses : empirical defenses are hard to detect generated triggers</p>
-</li>
-<li><p>Certified defense method : division plus vote-base classifier</p>
-</li>
-<li><p>Robustness and Tightness of Classifier</p>
-</li>
-<li><p>Test on dataset : 90% accuracy and completely defense for self-build generator</p>
-</li>
-</ol>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><h4 id="background-1"><a href="#background-1" class="headerlink" title="background"></a><strong>background</strong></h4><ol>
-<li>ML for graph developing</li>
-<li>the private data be taken seriously</li>
-<li>FedGL used to solve the data isolation or data private</li>
-<li>non-graph FL is vulnerable to backdoor attacks, but for graph data is underexplored</li>
-</ol>
-<h4 id="Backdoor-Attack-for-FedGL"><a href="#Backdoor-Attack-for-FedGL" class="headerlink" title="Backdoor Attack for FedGL"></a>Backdoor Attack for FedGL</h4><p><strong>challenges</strong></p>
-<ol>
-<li>various sizes of graphs</li>
-<li>important pixels in images are close for non-graph,but different for graph</li>
-<li>not only nodes but also edges should be considered</li>
-<li>randomly generates subgraphs for attacking has bad performance</li>
-</ol>
-<p><strong>Optimize</strong></p>
-<p>Weakness of current method : <em><strong>random nature</strong></em> $\rightarrow$ take <em><strong>individual and client information</strong></em> into consideration</p>
-<p>Opt-GDBA : adaptively optimize the size and shape of subgraph trigger and use the information of graph and client</p>
-<p>Modules of Opt-GDBA :</p>
-<ol>
-<li><p>input nodes and edges’ features, output the importance score of nodes</p>
-</li>
-<li><p>learning the trigger location by nodes’ importance scores, which includes two schemes, Definable-Trigger and Customized-Trigger</p>
-</li>
-<li><p>learning the trigger shape given the location, nodes &amp; edges attention and local trigger differentiation mechanisms</p>
-</li>
-</ol>
-<h4 id="Defense-for-Backdoor-Attacks"><a href="#Defense-for-Backdoor-Attacks" class="headerlink" title="Defense for Backdoor Attacks"></a>Defense for Backdoor Attacks</h4><p>Empirical defenses : bad performance on Opt-GDBA, and always broken by adaptive attacks</p>
-<p><strong>targets</strong></p>
-<ol>
-<li>predict correct label for bounded size picture even with injecting</li>
-<li>predict non-target label for backdoor picture</li>
-</ol>
-<p><strong>Challenges</strong></p>
-<ol>
-<li>the vary of testing graphs</li>
-<li>not rely on specific model</li>
-<li>trigger could perturb edges and nodes</li>
-<li>a determinate guarantee</li>
-<li>non-graph data require same size input, which could not use in graph data</li>
-<li>certified defenses of graph data is insufficient</li>
-</ol>
-<p><strong>Majority-voting based certified defense</strong></p>
-<p>critical steps:</p>
-<ol>
-<li>divide graph into subgraphs which are non-overlapped each other</li>
-<li>use majority-voting predict these subgraphs to make sure the number gap between injected graph and not-injected graph</li>
-<li>prove robustness</li>
-</ol>
-<h4 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h4><p><strong>Opt-GDBA</strong></p>
-<p>Dataset : 6 dataset</p>
-<p>Result : </p>
-<ol>
-<li>30%-46% on backdoor performance, and less nodes and edges trigger</li>
-<li>Customized-Trigger is more stealthy than Definable-Trigger</li>
-<li>backdoor graphs are persistent and hard to detect</li>
-</ol>
-<p><strong>Defense</strong></p>
-<p>Result:</p>
-<ol>
-<li>without attack for 20 edges and nodes in total in some case</li>
-<li>the certified accuracy in all dataset is 0</li>
-</ol>
-<h3 id="Background-and-Problem-Definition"><a href="#Background-and-Problem-Definition" class="headerlink" title="Background and Problem Definition"></a>Background and Problem Definition</h3><h4 id="FedGL"><a href="#FedGL" class="headerlink" title="FedGL"></a>FedGL</h4><p><strong>GL definition</strong></p>
-<p>$\nu$ : nodes set</p>
-<p>$\varepsilon$ ： edges set</p>
-<p>$d$ ：the number of features of nodes</p>
-<p>$X \in R^{|\nu|\times d}$ : node features matrix</p>
-<p>$A \in{0,1}^{|\nu|\times|\nu|}$ : adjacency matrix</p>
-<p>$G$ : $(\nu,\varepsilon,A)$</p>
-<p>$\gamma$ : labels set</p>
-<p>task : $f : G \rightarrow \gamma$</p>
-<p><strong>FedGL definition</strong></p>
-<p>$C$ : clients set</p>
-<p>$G^i$ : training graph dataset in client $i$</p>
-<p>steps :</p>
-<ol>
-<li>In t-th round, server randomly choose <strong>a subset of clients</strong> $C_t$ and <strong>broadcast the global model</strong> $\theta_t$ on server</li>
-<li>client $i \in C_t$ u<strong>pdate its local model</strong> $\theta_t^i$  using its local data $G^i$ and $\theta_t$ and <strong>submit</strong> updated $\theta_t^i$ to server</li>
-<li>server <strong>aggregate</strong> the $C_t$ models {$\theta_t^i, i \in C_t$} and <strong>learn global model</strong> $\theta_{t+1}$</li>
-</ol>
-<h4 id="Backdoor-Attack-for-FedGL-1"><a href="#Backdoor-Attack-for-FedGL-1" class="headerlink" title="Backdoor Attack for FedGL"></a>Backdoor Attack for FedGL</h4><p>Method : inject a subgraph trigger into training graphs with target label</p>
-<p>CBA : Centralized Backdoor Attack</p>
-<p>DBA : Distributed Backdoor Attack</p>
-<p>Rand : the randomness of shape and location of triggers</p>
-<p><strong>Rand-GCBA</strong></p>
-<p>limitations : </p>
-<ol>
-<li><p>all attacker use same trigger $\kappa$</p>
-</li>
-<li><p>randomly sample a subset of nodes from data graph as trigger location and replace with trigger $\kappa$</p>
-</li>
-</ol>
-<p>representation :</p>
-<p>$G_j^i$ : $j$-th graph for client $i$</p>
-<p>$R(G_j^i,\kappa)$ : generate backdoor by limitation 2</p>
-<p>$y_B$ : backdoor’s target label</p>
-<p>$G^i_B &#x3D; {R(G_j^i,\kappa),y_B}$ </p>
-<p>$G_C^i$ : the clean graphs without replacing by trigger $\kappa$</p>
-<p>$\theta$ : the global model</p>
-<p>$L$ : loss function</p>
-<p>$\theta_B^i &#x3D; \arg\min_{\theta_B^i} L(G^i_B \cup G_C^i;\theta)$</p>
-<p><strong>Rand-GDBA</strong></p>
-<p>limitations : </p>
-<ol>
-<li><p>different attacker use different trigger $\kappa^i$</p>
-</li>
-<li><p>randomly sample a subset of nodes from data graph as trigger location and replace with trigger $\kappa^i$</p>
-</li>
-</ol>
-<p>representation : </p>
-<p>$G^i_B &#x3D; {R(G_j^i,\kappa^i),y_B}$</p>
-<p>$\theta_B^i &#x3D; \arg\min_{\theta_B^i} L(G^i_B \cup G_C^i;\theta)$</p>
-<h4 id="Thread-Model"><a href="#Thread-Model" class="headerlink" title="Thread Model"></a>Thread Model</h4><p><strong>Attackers</strong></p>
-<p>aim : effective and stealthy DBA to FedGL</p>
-<p>knowledge : training graphs and global model</p>
-<p>capability : inject small part of trigger in every training iteration</p>
-<p>objective : high backdoor accuracy and high main task accuracy</p>
-<p><strong>Defenders</strong></p>
-<p>aim : certified defense against the worst-case DBA</p>
-<p>objective : high main task accuracy and low certified backdoor accuracy</p>
-<h3 id="OPT-GDBA"><a href="#OPT-GDBA" class="headerlink" title="OPT-GDBA"></a>OPT-GDBA</h3><h4 id="Node-importance-score-learning"><a href="#Node-importance-score-learning" class="headerlink" title="Node importance score learning"></a>Node importance score learning</h4><p>goal : measure node importance so that could replace it with trigger</p>
-<p>input : nodes and edges features</p>
-<p>Networks : EdgeView and NodeView</p>
-<p>Networks representation : $e^i &#x3D; EdgeView(A^i)$ and $n^i&#x3D;NodeView(X^i)$, $e^i,n^i \in(0,1)$</p>
-<p>output : $s^i &#x3D; e^i \odot n^i$</p>
-<h4 id="Trigger-location-learning"><a href="#Trigger-location-learning" class="headerlink" title="Trigger location learning"></a>Trigger location learning</h4><p><strong>Definable-Trigger</strong></p>
-<p>method :  predefines trigger node size $n_{tri}$</p>
-<p>steps :</p>
-<ol>
-<li><p>descending order nodes by $s^i$</p>
-</li>
-<li><p>select top $n_{tri}$ nodes from $G$</p>
-</li>
-</ol>
-<p>weakness : same trigger size for graphs with different sizes </p>
-<p><strong>Customized-Trigger</strong></p>
-<p>input : Nodes’ scores $s^i$ and max trigger size $n_{tri}$</p>
-<p>output : important nodes set</p>
-<p>steps :</p>
-<ol>
-<li><p>use Gap statistics to estimate the number of cluster $\hat k$</p>
-</li>
-<li><p>use $\hat k$-means for $s^i$</p>
-</li>
-<li><p>choose the cluster which has max average node score</p>
-</li>
-<li><p>if the number of nodes of the cluster is bigger than $n_{tri}$，select only top $n_{tri}$, else the cluster is output, output as $\nu$</p>
-</li>
-</ol>
-<h4 id="Trigger-shape-learning"><a href="#Trigger-shape-learning" class="headerlink" title="Trigger shape learning"></a>Trigger shape learning</h4><p>Networks : EdgeAtt, NodeAtt, EdgeEmb, NodeEmb</p>
-<p><strong>EdgeAtt</strong></p>
-<p>input : $A_B^i$,$\nu_{def}^i$</p>
-<p>output : $E_{tri}^i \in R^{|\nu_{def}^i| \times |\nu_{def}^i|}$</p>
-<p><strong>NodeAtt</strong></p>
-<p>input : $X^i_B$,$\nu_{def}^i$</p>
-<p>output : $N_{tri}^i \in R^{|\nu_{def}^i| \times d}$</p>
-<p><strong>EdgeEmb&#x2F;NodeEmb</strong></p>
-<p>input : $i$</p>
-<p>output : $I_e \in R^{|\nu_{def}^i| \times |\nu_{def}^i|}$ or $I_n \in R^{|\nu_{def}^i| \times d}$</p>
-<p><strong>Multiple</strong></p>
-<p>input : $E_{tri}^i,N_{tri}^i,I_e,I_n$</p>
-<p>output : $E_{tri}^i &#x3D; E_{tri}^i \odot I_e$，$N_{tri}^i &#x3D; N_{tri}^i \odot I_n$</p>
-<p><strong>binary</strong></p>
-<p>$E_{tri}^i &#x3D; \mathbb{1}(E_{tri}^i\ge0.5)$</p>
-<p><strong>trigger</strong></p>
-<p>$\kappa^i &#x3D; (\nu_{def}^i,E_{tri}^i,N_{tri}^i)$</p>
-<h4 id="Training-with-Optimized-Backdoor"><a href="#Training-with-Optimized-Backdoor" class="headerlink" title="Training with Optimized Backdoor"></a>Training with Optimized Backdoor</h4><p><strong>Local model training</strong></p>
-<p>malicious client<br>$$<br>\theta_B^i &#x3D; \arg \min_{\theta_B^i} L(G_B^i\cup G_C^i;\theta)<br>$$<br>benign client<br>$$<br>\theta^j &#x3D; \arg \min_{\theta_B^i} L(G^j;\theta)<br>$$<br><strong>Optimizing the adaptive trigger generator</strong></p>
-<p>$\omega^i$ : the parameters of malicious client $i$<br>$$<br>\omega^i &#x3D; \arg \min_{\omega^i} L(G_B^i;\theta_B^i)<br>$$</p>
-<h3 id="Attack-Result"><a href="#Attack-Result" class="headerlink" title="Attack Result"></a>Attack Result</h3><h4 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h4><p><strong>dataset</strong></p>
-<p>6 benchmark real-world graph dataset for graph classification</p>
-<p><strong>method</strong></p>
-<p>compare Opt-GDBA with Rand-GCBA, Rand-GDBA</p>
-<p><strong>Fair Setting</strong></p>
-<p>make sure the edge in GDBA &amp; GCBA same</p>
-<p><strong>Parameters Setting</strong></p>
-<table>
-<thead>
-<tr>
-<th>Parameters name</th>
-<th>value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Client number</td>
-<td>40</td>
-</tr>
-<tr>
-<td>Client number for MUTAG</td>
-<td>20</td>
-</tr>
-<tr>
-<td>Dataset Distribution</td>
-<td>Average</td>
-</tr>
-<tr>
-<td>Iteration number</td>
-<td>200</td>
-</tr>
-<tr>
-<td>Iteration number for RDT-M5K</td>
-<td>400</td>
-</tr>
-<tr>
-<td>Training Client Rate</td>
-<td>50%</td>
-</tr>
-<tr>
-<td>Rate of attacking client</td>
-<td>50%</td>
-</tr>
-<tr>
-<td>Rate of malicious clients $\rho$</td>
-<td>20%</td>
-</tr>
-<tr>
-<td>Size of Trigger Nodes $n_{tri}$</td>
-<td>4</td>
-</tr>
-<tr>
-<td>threshold of trigger nodes $n_{tri}^*$</td>
-<td>5</td>
-</tr>
-</tbody></table>
-<p><strong>Evaluation</strong></p>
-<ol>
-<li>main task accuracy MA</li>
-<li>backdoor accuracy BA</li>
-<li>the average trigger node size $n_{tri}$</li>
-<li>the average trigger edge size $e_{tri}$</li>
-</ol>
-<h4 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h4><p><strong>observation</strong></p>
-<ol>
-<li>main task performance marginally sacrificed under all attack</li>
-<li>Rand-GDBA is greater than Rand-GCBA</li>
-<li>Opt-GDBA &gt;  Rand-DGBA not only effectiveness but also stealthiness</li>
-</ol>
-<p><strong>impact of $\rho$</strong></p>
-<p>BA slightly increases with a larger $\rho$, but MA is stable</p>
-<p><strong>impact of $n_{tri}$</strong></p>
-<p>BA and $n_{tri}$ is positive relation</p>
-<p><strong>impact of learning scheme</strong></p>
-<p>Customized-Trigger can further locate more important region</p>
-<p><strong>global trigger vs local trigger</strong></p>
-<p>global trigger get higher BA than local trigger</p>
-<p><strong>Ablation study</strong></p>
-<p>EdgeView and trigger-location make good performance, about 15%</p>
-<p>trigger-shape make good performance too, about 25%</p>
-<p>all of them give about 36%</p>
-<h3 id="Certified-Defense-for-FedGL"><a href="#Certified-Defense-for-FedGL" class="headerlink" title="Certified Defense for FedGL"></a>Certified Defense for FedGL</h3><h4 id="Graph-division-into-Subgraphs"><a href="#Graph-division-into-Subgraphs" class="headerlink" title="Graph division into Subgraphs"></a>Graph division into Subgraphs</h4><p><strong>Node Division</strong></p>
-<p>$v \in V$ : node in the nodes set</p>
-<p>$str(\cdot)$ : stringify</p>
-<p>$h[\cdot]$ : hash function</p>
-<p>$T$ : the number of subgraphs</p>
-<p>$V^t$ : the nodes set with group index $t$, that is $V^t &#x3D; {u\in V|h[str(v)]\ mod\ (T+1)}$</p>
-<p>$X^t \in R^{|V|\times d}$ : node features in $t$-th group</p>
-<p>Node Division Steps : </p>
-<ol>
-<li>for every $v \in V$, $str(v)$</li>
-<li>group $str(v)$ by using $h[str(v)]\ mod\ (T+1)$</li>
-<li>$X_v^t&#x3D;X_v$ if $v \in V^t$ else $X_v^t&#x3D;0$</li>
-</ol>
-<p><strong>Edge Division</strong></p>
-<p>$(u,v) \in \varepsilon$ : undirected edge in the edges set</p>
-<p>make sure : $h[str(u) + str(v)] &#x3D; h[str(v)+str(u)]$</p>
-<p>Edge Division Steps:$\varepsilon^t &#x3D; {(u,v)|h[str(u)+str(v)]\ mod (T+1) &#x3D;t}$</p>
-<h4 id="Majority-Vote-based-Ensemble-Classifier"><a href="#Majority-Vote-based-Ensemble-Classifier" class="headerlink" title="Majority Vote-based Ensemble Classifier"></a>Majority Vote-based Ensemble Classifier</h4><p>$$<br>T_l &#x3D; \sum_{t&#x3D;1}^T \mathbb{1}(f_B(G^t)&#x3D;l) \<br>g_B(B) &#x3D; \arg \max_{l\in y} T_l<br>$$</p>
-<h4 id="Certified-Robustness-Guarantees"><a href="#Certified-Robustness-Guarantees" class="headerlink" title="Certified Robustness Guarantees"></a>Certified Robustness Guarantees</h4><p>…</p>
-<h3 id="Certified-Defense-Result"><a href="#Certified-Defense-Result" class="headerlink" title="Certified Defense Result"></a>Certified Defense Result</h3><h4 id="Settings-1"><a href="#Settings-1" class="headerlink" title="Settings"></a>Settings</h4><p><strong>parameters setting</strong></p>
-<table>
-<thead>
-<tr>
-<th>Parameter Name</th>
-<th>value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>$\rho$</td>
-<td>20%</td>
-</tr>
-<tr>
-<td>$n_{tri}$</td>
-<td>4</td>
-</tr>
-<tr>
-<td>$n_{tri}^*$</td>
-<td>5</td>
-</tr>
-<tr>
-<td>T</td>
-<td>30</td>
-</tr>
-</tbody></table>
-<p><strong>Evaluation Metrics</strong></p>
-<p>Certified MA at perturbation size m</p>
-<p>Certified BA</p>
-<h4 id="Result-1"><a href="#Result-1" class="headerlink" title="Result"></a>Result</h4><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
-<li>给定替换节点和替换子图，怎么进行替换操作</li>
-<li>这种分组方法能确保node和其对应的edge在一起？</li>
-<li>怎么确保$h[str(u) + str(v)] &#x3D; h[str(v)+str(u)]$，构造hash函数？</li>
-<li>T不断增大，不会损坏图本身的特征吗</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/paper-note-Distributed-Backdoor-Attacks-on-Federated-Graph-Learning-and-Certified-Defenses/" data-id="cm4pfn6yi0008u0w5gvbr8guo" data-title="paper note : Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/12/06/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2024-12-06T08:30:30.016Z" itemprop="datePublished">2024-12-06</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/12/06/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bitlfy.github.io/2024/12/06/hello-world/" data-id="cm4pfn6yi0007u0w5etbp8u3w" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://bitlfy.github.io/2024/12/06/GNN-Notes-LEC-02/" data-id="cm51u529l0003bww53lb32jyi" data-title="GNN Notes : LEC 02" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1281,6 +1218,11 @@
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
 
 </section>
         
@@ -1311,23 +1253,23 @@
       <ul>
         
           <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-10/">GNN-Notes-LEC-10</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-09/">GNN-Notes-LEC-09</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-07-08/">GNN-Notes-LEC-07-08</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/24/GNN-Notes-LEC-06/">GNN-Notes-LEC-06</a>
+          </li>
+        
+          <li>
             <a href="/2024/12/15/GNN-Notes-LEC-05/">GNN-Notes-LEC-05</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/12/Certified-Robustness-inspired-Attack-Framework/">Certified Robustness inspired Attack Framework</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/11/Certified-Robustness-via-Randomized-Smoothing/">Certified Robustness via Randomized Smoothing</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/06/GNN-Notes-LEC-04/">GNN Notes : LEC 04</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/06/GNN-Notes-LEC-03/">GNN Notes : LEC 03</a>
           </li>
         
       </ul>
